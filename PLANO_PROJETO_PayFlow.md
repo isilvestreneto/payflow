@@ -26,14 +26,14 @@
 
 Com 4 pessoas já alocadas e telas/responsabilidades restantes, sugiro a seguinte divisão (ajustem conforme integrantes adicionais):
 
-| Pessoa | Responsabilidade principal | Tarefas secundárias |
-|--------|---------------------------|---------------------|
-| **Ivanildo** | Login + Firebase Auth (OAuth2 Google) | Configuração do projeto Firebase, AndroidManifest, SHA-1 |
-| **Ana Caroline** | Tela de Histórico + filtros/ordenação | DAO/Repository de Assinaturas (queries de filtro) |
-| **Rafael** | Tela de Cadastro de Assinatura | Validação de formulários, máscaras (valor, data) |
-| **Jeferson** | Tela de Detalhe + ações (cancelar/reativar) | DAO/Repository (update de status) |
-| **Integrante 5** | Tela Home (Dashboard) + cálculos de resumo | Componentes reutilizáveis (cards, uso de Material Icons) |
-| **Integrante 6** | Tela Perfil + Configurações (tema) + README + apresentação | DataStore de tema, navegação geral, integração final |
+| Pessoa                            | Responsabilidade principal | Tarefas secundárias |
+|-----------------------------------|---------------------------|---------------------|
+| **Ivanildo**                      | Login + Firebase Auth (OAuth2 Google) | Configuração do projeto Firebase, AndroidManifest, SHA-1 |
+| **Ana Caroline**                  | Tela de Histórico + filtros/ordenação | DAO/Repository de Assinaturas (queries de filtro) |
+| **Rafael**                        | Tela de Cadastro de Assinatura | Validação de formulários, máscaras (valor, data) |
+| **Jeferson**                      | Tela de Detalhe + ações (cancelar/reativar) | DAO/Repository (update de status) |
+| **Wendel**                        | Tela Home (Dashboard) + cálculos de resumo | Componentes reutilizáveis (cards, uso de Material Icons) |
+| **Aleff + quem liberar primeiro** | Tela Perfil + Configurações (tema) + README + apresentação | DataStore de tema, navegação geral, integração final |
 
 > 💡 Se forem 5 pessoas, o "Integrante 6" se distribui: tema/DataStore vai pra quem cuida do Perfil; README/apresentação vira responsabilidade compartilhada.
 
