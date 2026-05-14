@@ -26,13 +26,13 @@
 
 Com 4 pessoas já alocadas e telas/responsabilidades restantes, sugiro a seguinte divisão (ajustem conforme integrantes adicionais):
 
-| Pessoa                            | Responsabilidade principal | Tarefas secundárias |
-|-----------------------------------|---------------------------|---------------------|
-| **Ivanildo**                      | Login + Firebase Auth (OAuth2 Google) | Configuração do projeto Firebase, AndroidManifest, SHA-1 |
-| **Ana Caroline**                  | Tela de Histórico + filtros/ordenação | DAO/Repository de Assinaturas (queries de filtro) |
-| **Rafael**                        | Tela de Cadastro de Assinatura | Validação de formulários, máscaras (valor, data) |
-| **Jeferson**                      | Tela de Detalhe + ações (cancelar/reativar) | DAO/Repository (update de status) |
-| **Wendel**                        | Tela Home (Dashboard) + cálculos de resumo | Componentes reutilizáveis (cards, uso de Material Icons) |
+| Pessoa | Responsabilidade principal | Tarefas secundárias |
+|--------|---------------------------|---------------------|
+| **Ivanildo** | Login + Firebase Auth (OAuth2 Google) | Configuração do projeto Firebase, AndroidManifest, SHA-1 |
+| **Ana Caroline** | Tela de Histórico + filtros/ordenação | DAO/Repository de Assinaturas (queries de filtro) |
+| **Rafael** | Tela de Cadastro de Assinatura | Validação de formulários, máscaras (valor, data) |
+| **Jeferson** | Tela de Detalhe + ações (cancelar/reativar) | DAO/Repository (update de status) |
+| **Wendel** | Tela Home (Dashboard) + cálculos de resumo | Componentes reutilizáveis (cards, uso de Material Icons) |
 | **Aleff + quem liberar primeiro** | Tela Perfil + Configurações (tema) + README + apresentação | DataStore de tema, navegação geral, integração final |
 
 > 💡 Se forem 5 pessoas, o "Integrante 6" se distribui: tema/DataStore vai pra quem cuida do Perfil; README/apresentação vira responsabilidade compartilhada.
@@ -41,7 +41,7 @@ Com 4 pessoas já alocadas e telas/responsabilidades restantes, sugiro a seguint
 
 ## 🗂️ 3. Planejamento por feature
 
-O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre PR → revisão → merge em `develop` → ao final, `develop` → `main`.
+O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre PR → revisão → merge na `main`.
 
 > ⚠️ **Leia a feature 0 e 1 antes de começar qualquer tela.** Elas são pré-requisitos para todo o restante.
 
@@ -52,7 +52,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 **Branch:** `setup/project-foundation` → merge direto na `main`
 
 - [ ] Criar repositório no GitHub e adicionar todos como colaboradores
-- [ ] Definir fluxo de Git: `main` (estável) ← `develop` (integração) ← `feature/*` (individual)
+- [ ] Definir fluxo de Git: `feature/*` → PR → revisão → merge na `main`
 - [ ] Criar projeto no Android Studio (Empty Activity, Kotlin, Compose, min SDK 24)
 - [ ] Configurar `build.gradle.kts` com todas as dependências (ver seção 9)
 - [ ] Criar estrutura de pacotes MVVM completa (ver seção 4) — pastas vazias com `.gitkeep`
@@ -97,7 +97,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] Redirecionar para Home se já autenticado ao abrir o app
 - [ ] Tratar erro de autenticação com mensagem visível na tela
 - [ ] Navegação Login → Home após sucesso
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -112,7 +112,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] Exibir cotação USD-BRL consumida via Retrofit (API pública — ver seção 5)
 - [ ] Estados: loading (skeleton ou `CircularProgressIndicator`), dados, vazio (nenhuma assinatura ainda)
 - [ ] FAB com `Icons.Default.Add` navegando para Cadastro
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -128,7 +128,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] Ordenação por data, nome e status
 - [ ] Estado vazio: ícone + mensagem sugerindo cadastrar a primeira assinatura
 - [ ] Navegação para Detalhe ao tocar em um card
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -144,7 +144,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] Botão "Salvar" habilitado somente com todos os campos obrigatórios válidos
 - [ ] Máscara de valor (ex: `R$ 0,00`) e validação de datas
 - [ ] Navegar de volta ao Histórico ou Home após salvar
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -159,7 +159,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] Botão "Reativar assinatura" (visível quando status = CANCELED) com confirmação em `AlertDialog`
 - [ ] Atualização de status refletida imediatamente via Flow no Room
 - [ ] `TopAppBar` com botão de voltar (`Icons.AutoMirrored.Default.ArrowBack`)
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -171,7 +171,7 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] `ProfileViewModel.kt` expondo dados do `FirebaseAuth.currentUser`
 - [ ] `ProfileScreen.kt` com foto de perfil via Coil (`AsyncImage`), nome e e-mail
 - [ ] Botão de logout com `Icons.AutoMirrored.Default.Logout` → limpar sessão e navegar para Login
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
@@ -184,15 +184,15 @@ O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre P
 - [ ] `SettingsViewModel.kt` lendo e gravando preferência de tema
 - [ ] `SettingsScreen.kt` com seletor de tema: claro (`Icons.Default.LightMode`), escuro (`Icons.Default.DarkMode`), sistema (`Icons.Default.SettingsBrightness`)
 - [ ] Aplicar tema dinamicamente em `MainActivity` ao mudar a preferência (sem reiniciar o app)
-- [ ] **PR → `develop`**
+- [ ] **PR → `main`**
 
 ---
 
 ### 🔗 Feature 9 — Integração, polimento e entrega
 **Responsável:** todos
-**Branch:** `develop` → `main`
+**Branch:** `main` → `main`
 
-- [ ] Garantir que todos os PRs de telas foram mergeados em `develop`
+- [ ] Garantir que todos os PRs de telas foram mergeados em `main`
 - [ ] Revisar navegação completa de ponta a ponta no fluxo principal
 - [ ] Tratar estados de loading/erro/vazio em todas as telas que ainda estiverem faltando
 - [ ] Garantir uso consistente de Material Icons (sem misturar com drawables bitmap)
@@ -423,45 +423,45 @@ Em ordem de custo-benefício:
 
 ```kotlin
 dependencies {
-  // Compose + Material 3 (Material Android)
-  implementation(platform("androidx.compose:compose-bom:2024.09.00"))
-  implementation("androidx.compose.material3:material3")
-  implementation("androidx.compose.material:material-icons-extended") // Material Icons completo
-  implementation("androidx.activity:activity-compose:1.9.2")
-  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-  implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    // Compose + Material 3 (Material Android)
+    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended") // Material Icons completo
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
-  // Navigation
-  implementation("androidx.navigation:navigation-compose:2.8.2")
-  implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-  // Hilt
-  implementation("com.google.dagger:hilt-android:2.51.1")
-  ksp("com.google.dagger:hilt-compiler:2.51.1")
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-compiler:2.51.1")
 
-  // Room (persistência local — única fonte de dados de assinaturas)
-  implementation("androidx.room:room-runtime:2.6.1")
-  implementation("androidx.room:room-ktx:2.6.1")
-  ksp("androidx.room:room-compiler:2.6.1")
+    // Room (persistência local — única fonte de dados de assinaturas)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
-  // DataStore (preferências de tema)
-  implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // DataStore (preferências de tema)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-  // Firebase (apenas autenticação — sem Firestore)
-  implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-  implementation("com.google.firebase:firebase-auth-ktx")
-  implementation("com.google.android.gms:play-services-auth:21.2.0")
+    // Firebase (apenas autenticação — sem Firestore)
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
-  // Retrofit + Moshi (API de cotação e catálogo mockado)
-  implementation("com.squareup.retrofit2:retrofit:2.11.0")
-  implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
-  implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // Retrofit + Moshi (API de cotação e catálogo mockado)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-  // Coil (foto de perfil do Google)
-  implementation("io.coil-kt:coil-compose:2.7.0")
+    // Coil (foto de perfil do Google)
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
-  // Coroutines
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
 ```
 
