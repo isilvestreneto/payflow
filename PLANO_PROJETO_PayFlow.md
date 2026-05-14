@@ -39,81 +39,176 @@ Com 4 pessoas já alocadas e telas/responsabilidades restantes, sugiro a seguint
 
 ---
 
-## 🗓️ 3. Cronograma de 9 dias
+## 🗂️ 3. Planejamento por feature
 
-### **Dia 1 — Setup e fundação** (todos)
+O fluxo de trabalho é: cada pessoa trabalha na sua branch de feature → abre PR → revisão → merge em `develop` → ao final, `develop` → `main`.
+
+> ⚠️ **Leia a feature 0 e 1 antes de começar qualquer tela.** Elas são pré-requisitos para todo o restante.
+
+---
+
+### 🔧 Feature 0 — Setup e fundação
+**Responsável:** todos (fazer juntos ou dividir entre 2 pessoas no início)
+**Branch:** `setup/project-foundation` → merge direto na `main`
+
 - [ ] Criar repositório no GitHub e adicionar todos como colaboradores
-- [ ] Criar branch `develop` e definir fluxo (feature branches → PR → develop → main)
+- [ ] Definir fluxo de Git: `main` (estável) ← `develop` (integração) ← `feature/*` (individual)
 - [ ] Criar projeto no Android Studio (Empty Activity, Kotlin, Compose, min SDK 24)
-- [ ] Configurar `build.gradle` com dependências (Compose BOM, Material 3, Material Icons Extended, Navigation, Hilt, Room, DataStore, Firebase Auth, Retrofit, Coil)
+- [ ] Configurar `build.gradle.kts` com todas as dependências (ver seção 9)
+- [ ] Criar estrutura de pacotes MVVM completa (ver seção 4) — pastas vazias com `.gitkeep`
+- [ ] Configurar `PayFlowApplication.kt` com `@HiltAndroidApp`
+- [ ] Configurar `MainActivity.kt` com `@AndroidEntryPoint`
+- [ ] Implementar tema base (`Color.kt`, `Theme.kt`, `Type.kt`) com Material 3
+- [ ] Criar `NavGraph` com rotas placeholder e `Screen.kt`
 - [ ] Criar projeto no Firebase Console + cadastrar app Android + baixar `google-services.json`
-- [ ] Gerar SHA-1 (debug) e cadastrar no Firebase
+- [ ] Gerar SHA-1 (debug **e** release) e cadastrar no Firebase
 - [ ] Ativar provedor Google no Firebase Authentication
-- [ ] Reunião de 30min: alinhamento da estrutura de pastas e padrões de código
+- [ ] **PR + merge na `main`** — base pronta para todos partirem
 
-### **Dia 2 — Estrutura base + Login** (Ivanildo + Integrante 5)
-- [ ] Criar estrutura de pacotes MVVM (ver seção 4)
-- [ ] Configurar `Application` class + Hilt
-- [ ] Criar `AppDatabase` (Room), entidades vazias e DAOs com assinaturas
-- [ ] Criar `NavGraph` com rotas placeholder
-- [ ] Implementar tema (Material 3, cores, tipografia, ícones do Material Android)
-- [ ] **Ivanildo:** implementar `LoginScreen` + `LoginViewModel` + `AuthRepository` com Firebase Auth (Google Sign-In)
-- [ ] Persistir sessão (auto-login se já autenticado)
+---
 
-### **Dia 3 — Modelos e camada de dados** (Ana Caroline + Rafael)
-- [ ] Definir `Subscription` (entity + domain model + enums `SubscriptionStatus`, `SubscriptionType`, `PaymentMethod`)
-- [ ] Definir `User` (DataStore para preferências locais)
-- [ ] Implementar `SubscriptionDao` (CRUD + queries de filtro/ordenação)
-- [ ] Implementar `SubscriptionRepository` com Flow (Room como única fonte de dados)
-- [ ] Criar seed de dados (5–10 assinaturas de exemplo) pra apresentação
-- [ ] Definir qual API será consumida (ver seção 5)
+### 🧱 Feature 1 — Entidade de domínio: Subscription
+**Responsável:** Rafael + Ana Caroline + Jeferson (alinhar juntos antes de codar)
+**Branch:** `feature/subscription-entity` → merge na `main` antes das telas de cada um
 
-### **Dia 4 — Tela Home + Cadastro** (Integrante 5 + Rafael)
-- [ ] **Home:** HomeScreen com cards de resumo (total ativas, gasto mensal, mais cara/barata/usada, média)
-- [ ] HomeViewModel: combinar Flow do Room para calcular estatísticas reativas
-- [ ] Usar Material Icons para ilustrar cada card (ex: `Icons.Default.AttachMoney`, `Icons.Default.TrendingUp`)
-- [ ] **Cadastro:** RegisterSubscriptionScreen com formulário (nome, valor, status, datas, forma pagamento, tipo)
-- [ ] Validações inline e botão de salvar habilitado só com campos válidos
-- [ ] Navegação Home ↔ Cadastro funcional
+> Esta feature é **bloqueante** para as telas de Cadastro, Histórico e Detalhe. Os três devem alinhar o modelo antes de cada um abrir a branch da sua tela.
 
-### **Dia 5 — Histórico + Detalhe** (Ana Caroline + Jeferson)
-- [ ] **Histórico:** HistoryScreen com lista (LazyColumn) + filtros (status, período) + ordenação
-- [ ] Componente `SubscriptionCard` reutilizável com Material Icons por categoria (ex: `Icons.Default.PlayCircle` para streaming)
-- [ ] **Detalhe:** SubscriptionDetailScreen recebendo `subscriptionId` via navegação
-- [ ] Ações: cancelar/reativar (update no Room) + voltar
-- [ ] Estado vazio na listagem ("Você ainda não tem assinaturas — cadastre a primeira!")
+- [ ] Reunião rápida (15min) entre Rafael, Ana e Jeferson para validar todos os campos
+- [ ] Criar `Subscription.kt` (domain model)
+- [ ] Criar enums: `SubscriptionStatus` (ACTIVE, CANCELED, PAUSED), `SubscriptionType` (STREAMING, SERVICOS, TELEFONIA, BANCOS, IA, OUTROS), `PaymentMethod` (CREDIT_CARD, PIX, BOLETO, DEBIT)
+- [ ] Criar `SubscriptionEntity.kt` (`@Entity`) com todos os campos + `Converters.kt`
+- [ ] Criar `SubscriptionMapper.kt` (Entity ↔ Domain)
+- [ ] Criar `SubscriptionDao.kt` com: `insert`, `update`, `delete`, `getAll`, `getById`, `getByStatus`, `getByPeriod`
+- [ ] Criar `AppDatabase.kt` com a entidade registrada
+- [ ] Criar `SubscriptionRepository.kt` expondo `Flow<List<Subscription>>`
+- [ ] Criar seed de dados (5–10 assinaturas de exemplo) para demonstração
+- [ ] **PR + merge na `main`** — todos os três fazem rebase antes de abrir suas branches de tela
 
-### **Dia 6 — Perfil + Configurações** (Integrante 6)
-- [ ] **Perfil:** ProfileScreen exibindo dados do Firebase Auth (foto via Coil, nome, email)
-- [ ] Botão de logout com ícone `Icons.AutoMirrored.Default.Logout`
-- [ ] **Configurações:** SettingsScreen com seletor de tema (claro/escuro/sistema) usando `Icons.Default.LightMode`, `Icons.Default.DarkMode`, `Icons.Default.SettingsBrightness`
-- [ ] Persistir tema escolhido em DataStore
-- [ ] Aplicar tema dinamicamente em toda a app (recompor na mudança)
+---
 
-### **Dia 7 — Integração + API + polimento** (todos)
-- [ ] Integrar consumo da API escolhida (ver seção 5)
-- [ ] Tratar estados: loading, sucesso, erro, vazio em todas as telas principais
-- [ ] Revisar navegação completa de ponta a ponta
-- [ ] Garantir uso consistente de Material Icons em toda a app (TopBar, FAB, botões)
-- [ ] Testar fluxo completo (login → cadastrar → ver histórico → detalhar → cancelar → voltar)
+### 🔐 Feature 2 — Tela: Login
+**Responsável:** Ivanildo
+**Branch:** `feature/login-screen`
+**Depende de:** Feature 0
 
-### **Dia 8 — Testes, ajustes finais e README**
-- [ ] Testar em emulador e em dispositivo físico
-- [ ] Corrigir bugs encontrados
-- [ ] Capturar screenshots/GIFs das telas principais
-- [ ] Escrever README completo (ver template em `README.md`)
+- [ ] `AuthRepository.kt`: login com Google via Firebase Auth, logout, verificar sessão ativa
+- [ ] `LoginViewModel.kt` com `LoginUiState` (idle, loading, success, error)
+- [ ] `LoginScreen.kt`: botão "Entrar com Google" com logo Google (Material Icons ou drawable oficial)
+- [ ] Redirecionar para Home se já autenticado ao abrir o app
+- [ ] Tratar erro de autenticação com mensagem visível na tela
+- [ ] Navegação Login → Home após sucesso
+- [ ] **PR → `develop`**
+
+---
+
+### 🏠 Feature 3 — Tela: Home (Dashboard)
+**Responsável:** Integrante 5
+**Branch:** `feature/home-screen`
+**Depende de:** Feature 0 + Feature 1
+
+- [ ] `GetHomeSummaryUseCase.kt`: calcular total de ativas, gasto mensal, média, mais cara, mais barata, mais usada
+- [ ] `HomeViewModel.kt` consumindo Flow do Room via use case
+- [ ] `HomeScreen.kt` com cards de resumo (Material Icons: `AttachMoney`, `TrendingUp`, `TrendingDown`, `Star`)
+- [ ] Exibir cotação USD-BRL consumida via Retrofit (API pública — ver seção 5)
+- [ ] Estados: loading (skeleton ou `CircularProgressIndicator`), dados, vazio (nenhuma assinatura ainda)
+- [ ] FAB com `Icons.Default.Add` navegando para Cadastro
+- [ ] **PR → `develop`**
+
+---
+
+### 📜 Feature 4 — Tela: Histórico
+**Responsável:** Ana Caroline
+**Branch:** `feature/history-screen`
+**Depende de:** Feature 0 + Feature 1
+
+- [ ] `HistoryViewModel.kt` com filtros reativos via `StateFlow` (status + período) sobre o Flow do Room
+- [ ] `HistoryScreen.kt` com `LazyColumn` de assinaturas
+- [ ] Componente `SubscriptionCard.kt` reutilizável com ícone por tipo (`PlayCircle` streaming, `Phone` telefonia, `AccountBalance` banco, etc.)
+- [ ] `FilterBottomSheet.kt` (ModalBottomSheet Material 3) com filtros: status (chip group) + período (date picker)
+- [ ] Ordenação por data, nome e status
+- [ ] Estado vazio: ícone + mensagem sugerindo cadastrar a primeira assinatura
+- [ ] Navegação para Detalhe ao tocar em um card
+- [ ] **PR → `develop`**
+
+---
+
+### ➕ Feature 5 — Tela: Cadastro de Assinatura
+**Responsável:** Rafael
+**Branch:** `feature/register-subscription-screen`
+**Depende de:** Feature 0 + Feature 1
+
+- [ ] `RegisterSubscriptionViewModel.kt` com validação de cada campo como `StateFlow`
+- [ ] `RegisterSubscriptionScreen.kt` com `OutlinedTextField` (Material 3) para: nome, valor, data de inclusão, data de vencimento
+- [ ] Seletores: status (dropdown), tipo (dropdown com ícone por categoria), forma de pagamento (dropdown)
+- [ ] Campo de nome com autocomplete: ao digitar, sugerir serviços do catálogo mockado via API (ver seção 5)
+- [ ] Botão "Salvar" habilitado somente com todos os campos obrigatórios válidos
+- [ ] Máscara de valor (ex: `R$ 0,00`) e validação de datas
+- [ ] Navegar de volta ao Histórico ou Home após salvar
+- [ ] **PR → `develop`**
+
+---
+
+### 🔎 Feature 6 — Tela: Detalhe da Assinatura
+**Responsável:** Jeferson
+**Branch:** `feature/subscription-detail-screen`
+**Depende de:** Feature 0 + Feature 1
+
+- [ ] `SubscriptionDetailViewModel.kt` recebendo `subscriptionId` e buscando no Room via `getById`
+- [ ] `SubscriptionDetailScreen.kt` exibindo todos os campos da assinatura com ícones do Material Android
+- [ ] Botão "Cancelar assinatura" (visível quando status = ACTIVE) com confirmação em `AlertDialog`
+- [ ] Botão "Reativar assinatura" (visível quando status = CANCELED) com confirmação em `AlertDialog`
+- [ ] Atualização de status refletida imediatamente via Flow no Room
+- [ ] `TopAppBar` com botão de voltar (`Icons.AutoMirrored.Default.ArrowBack`)
+- [ ] **PR → `develop`**
+
+---
+
+### 👤 Feature 7 — Tela: Perfil
+**Responsável:** Integrante 6
+**Branch:** `feature/profile-screen`
+**Depende de:** Feature 0 + Feature 2 (Login)
+
+- [ ] `ProfileViewModel.kt` expondo dados do `FirebaseAuth.currentUser`
+- [ ] `ProfileScreen.kt` com foto de perfil via Coil (`AsyncImage`), nome e e-mail
+- [ ] Botão de logout com `Icons.AutoMirrored.Default.Logout` → limpar sessão e navegar para Login
+- [ ] **PR → `develop`**
+
+---
+
+### ⚙️ Feature 8 — Tela: Configurações
+**Responsável:** Integrante 6
+**Branch:** `feature/settings-screen`
+**Depende de:** Feature 0
+
+- [ ] `ThemePreferences.kt` com DataStore para persistir escolha de tema
+- [ ] `SettingsViewModel.kt` lendo e gravando preferência de tema
+- [ ] `SettingsScreen.kt` com seletor de tema: claro (`Icons.Default.LightMode`), escuro (`Icons.Default.DarkMode`), sistema (`Icons.Default.SettingsBrightness`)
+- [ ] Aplicar tema dinamicamente em `MainActivity` ao mudar a preferência (sem reiniciar o app)
+- [ ] **PR → `develop`**
+
+---
+
+### 🔗 Feature 9 — Integração, polimento e entrega
+**Responsável:** todos
+**Branch:** `develop` → `main`
+
+- [ ] Garantir que todos os PRs de telas foram mergeados em `develop`
+- [ ] Revisar navegação completa de ponta a ponta no fluxo principal
+- [ ] Tratar estados de loading/erro/vazio em todas as telas que ainda estiverem faltando
+- [ ] Garantir uso consistente de Material Icons (sem misturar com drawables bitmap)
+- [ ] Testar em emulador e dispositivo físico
+- [ ] Capturar screenshots/GIFs para o README
+- [ ] Preencher o README com integrantes, prints e instruções finais
 - [ ] Garantir que `git clone` + sync do Gradle + execução funciona do zero
-
-### **Dia 9 — Apresentação**
-- [ ] Ensaiar apresentação (roteiro de 10min)
+- [ ] Tag `v1.0` no commit final na `main`
+- [ ] Ensaiar apresentação (roteiro de 10min):
   - 1min: Problema e proposta
   - 1min: Equipe e tecnologias
   - 4min: Demonstração ao vivo
   - 2min: Arquitetura MVVM, API e persistência
   - 1min: Diferencial e decisões
   - 1min: GitHub/README, aprendizados
-- [ ] Preparar backup: vídeo de demonstração caso falhe ao vivo
-- [ ] Conferir checklist da seção 6 antes da entrega
+- [ ] Gravar vídeo de backup da demonstração
 
 ---
 
@@ -328,45 +423,45 @@ Em ordem de custo-benefício:
 
 ```kotlin
 dependencies {
-    // Compose + Material 3 (Material Android)
-    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended") // Material Icons completo
-    implementation("androidx.activity:activity-compose:1.9.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+  // Compose + Material 3 (Material Android)
+  implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+  implementation("androidx.compose.material3:material3")
+  implementation("androidx.compose.material:material-icons-extended") // Material Icons completo
+  implementation("androidx.activity:activity-compose:1.9.2")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+  implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
-    // Navigation
-    implementation("androidx.navigation:navigation-compose:2.8.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+  // Navigation
+  implementation("androidx.navigation:navigation-compose:2.8.2")
+  implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    ksp("com.google.dagger:hilt-compiler:2.51.1")
+  // Hilt
+  implementation("com.google.dagger:hilt-android:2.51.1")
+  ksp("com.google.dagger:hilt-compiler:2.51.1")
 
-    // Room (persistência local — única fonte de dados de assinaturas)
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+  // Room (persistência local — única fonte de dados de assinaturas)
+  implementation("androidx.room:room-runtime:2.6.1")
+  implementation("androidx.room:room-ktx:2.6.1")
+  ksp("androidx.room:room-compiler:2.6.1")
 
-    // DataStore (preferências de tema)
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+  // DataStore (preferências de tema)
+  implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // Firebase (apenas autenticação — sem Firestore)
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+  // Firebase (apenas autenticação — sem Firestore)
+  implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+  implementation("com.google.firebase:firebase-auth-ktx")
+  implementation("com.google.android.gms:play-services-auth:21.2.0")
 
-    // Retrofit + Moshi (API de cotação e catálogo mockado)
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+  // Retrofit + Moshi (API de cotação e catálogo mockado)
+  implementation("com.squareup.retrofit2:retrofit:2.11.0")
+  implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-    // Coil (foto de perfil do Google)
-    implementation("io.coil-kt:coil-compose:2.7.0")
+  // Coil (foto de perfil do Google)
+  implementation("io.coil-kt:coil-compose:2.7.0")
 
-    // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+  // Coroutines
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
 ```
 
