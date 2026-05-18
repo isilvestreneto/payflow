@@ -1,5 +1,6 @@
 package com.payflow.app.domain.usecase
 
+import android.content.res.Resources
 import com.payflow.app.domain.model.PaymentMethod
 import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
@@ -29,6 +30,7 @@ class GetSubscriptionsUseCase {
                 startDate = now,
                 billingDate = 15,
                 useCount = 28,
+                iconResId = android.R.drawable.ic_dialog_info, // Ícone temporário
                 createdAt = now
             ),
             Subscription(
@@ -41,6 +43,7 @@ class GetSubscriptionsUseCase {
                 startDate = now,
                 billingDate = 10,
                 useCount = 45,
+                iconResId = android.R.drawable.ic_dialog_info,
                 createdAt = now
             ),
             Subscription(
@@ -53,6 +56,7 @@ class GetSubscriptionsUseCase {
                 startDate = now,
                 billingDate = 5,
                 useCount = 35,
+                iconResId = android.R.drawable.ic_dialog_info,
                 createdAt = now
             ),
             Subscription(
@@ -65,6 +69,7 @@ class GetSubscriptionsUseCase {
                 startDate = now,
                 billingDate = 20,
                 useCount = 12,
+                iconResId = android.R.drawable.ic_dialog_info,
                 createdAt = now
             ),
             Subscription(
@@ -77,6 +82,7 @@ class GetSubscriptionsUseCase {
                 startDate = now,
                 billingDate = 25,
                 useCount = 8,
+                iconResId = android.R.drawable.ic_dialog_info,
                 createdAt = now
             )
         )
