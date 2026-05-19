@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.payflow.app.ui.preferences.AppThemeMode
+import com.payflow.app.ui.preferences.CurrencyPreference
 import com.payflow.app.ui.screens.cards.CardsScreen
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryScreen
@@ -21,7 +23,14 @@ import com.payflow.app.ui.screens.settings.SettingsScreen
 @Composable
 fun PayFlowNavGraph(
     navController: NavHostController,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    currentThemeMode: AppThemeMode,
+    onThemeModeChange: (AppThemeMode) -> Unit,
+    currentCurrency: CurrencyPreference,
+    onCurrencyChange: (CurrencyPreference) -> Unit,
+    profilePhotoUri: String?,
+    onProfilePhotoChange: (String?) -> Unit,
+    onSignOut: () -> Unit
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -102,7 +111,15 @@ fun PayFlowNavGraph(
             }
             
             composable(BottomNavItem.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(
+                    currentThemeMode = currentThemeMode,
+                    onThemeModeChange = onThemeModeChange,
+                    currentCurrency = currentCurrency,
+                    onCurrencyChange = onCurrencyChange,
+                    profilePhotoUri = profilePhotoUri,
+                    onProfilePhotoChange = onProfilePhotoChange,
+                    onSignOut = onSignOut
+                )
             }
             
             composable(BottomNavItem.Settings.route) {
