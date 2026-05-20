@@ -137,14 +137,14 @@ private fun HomeContent(
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         // Título dos cartões
-        item {
+        /*item {
             Text(
                 text = "Meus Cartões",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         }
-        
+
         // Card de cartão animado
         item {
             AnimatedCreditCard(
@@ -155,10 +155,10 @@ private fun HomeContent(
                     Color(0xFF0F4C75),
                     Color(0xFF1B262C)
                 ),
-                onClick = { /* Abrir detalhes do cartão */ }
+                onClick = { *//* Abrir detalhes do cartão *//* }
             )
         }
-        
+
         // Card de destaque - Gasto Mensal
         item {
             HighlightCard(
@@ -168,7 +168,7 @@ private fun HomeContent(
                 icon = Icons.Default.AttachMoney,
                 onClick = onNavigateToMonthlySpending
             )
-        }
+        }*/
         
         // Título das métricas
         item {

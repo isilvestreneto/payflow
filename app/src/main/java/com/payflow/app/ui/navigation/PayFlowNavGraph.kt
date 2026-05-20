@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,17 +12,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.payflow.app.ui.screens.cards.CardsScreen
 import com.payflow.app.ui.screens.detail.*
-import com.payflow.app.ui.screens.history.HistoryScreen
+import com.payflow.app.ui.screens.history.HistoryViewModelFactory
 import com.payflow.app.ui.screens.home.HomeScreen
-import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.home.HomeUiState
+import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.ui.screens.settings.SettingsScreen
+import com.payflow.ui.screens.history.HistoryScreen
+import com.payflow.ui.screens.history.HistoryViewModel
+import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 
 @Composable
 fun PayFlowNavGraph(
     navController: NavHostController,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    getSubscriptionsUseCase: GetSubscriptionsUseCase
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -96,9 +101,20 @@ fun PayFlowNavGraph(
                     }
                 )
             }
-            
-            composable(BottomNavItem.History.route) {
-                HistoryScreen()
+
+            composable(route = BottomNavItem.History.route) {
+                val factory = HistoryViewModelFactory(getSubscriptionsUseCase)
+                val historyViewModel: HistoryViewModel = viewModel(factory = factory)
+                HistoryScreen(
+                    onNavigateToDetail = { subscriptionId ->
+                        navController.navigate(Screen.Detail.createRoute(subscriptionId))
+                    },
+                    onNavigateToCreate = {
+                        navController.navigate(Screen.Create.route)
+                    },
+                    onBackClick = { navController.popBackStack() },
+                    viewModel = historyViewModel
+                )
             }
             
             composable(BottomNavItem.Profile.route) {

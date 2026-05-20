@@ -6,6 +6,7 @@ import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.SubscriptionType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.time.LocalDate
 import java.util.Date
 
 // UseCase temporário com dados mockados para desenvolvimento
@@ -16,7 +17,7 @@ class GetSubscriptionsUseCase {
     }
 
     private fun getMockSubscriptions(): List<Subscription> {
-        val now = Date()
+        val now = LocalDate.now()
         
         return listOf(
             Subscription(
