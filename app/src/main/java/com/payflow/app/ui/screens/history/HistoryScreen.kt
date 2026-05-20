@@ -6,7 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,10 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.graphicsLayer as rotate
 import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.Subscription
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,7 +40,7 @@ fun HistoryScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Voltar"
                         )
                     }
@@ -562,7 +560,7 @@ private fun SubscriptionCard(
                 Text(
                     text = "R$ ${String.format("%.2f", subscription.value)}",
                     style = MaterialTheme.typography.bodyMedium,
-                    /*color = MaterialTheme.colorScheme.onSurfaceVariant*/
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
@@ -581,11 +579,9 @@ private fun SubscriptionCard(
             }
 
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.Default.ArrowForward,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .rotate(180f),
+                modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
