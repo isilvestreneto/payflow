@@ -22,10 +22,50 @@ import java.util.*
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    onNavigateToActiveSubscriptions: () -> Unit,
+    onNavigateToMonthlySpending: () -> Unit,
+    onNavigateToAverageValue: () -> Unit,
+    onNavigateToMostExpensive: () -> Unit,
+    onNavigateToCheapest: () -> Unit,
+    onNavigateToMostUsed: () -> Unit,
+    onNavigateToAddSubscription: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
     
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        "PayFlow",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                actions = {
+                    IconButton(onClick = { /* Navegar para perfil */ }) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Perfil"
+                        )
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToAddSubscription,
+                containerColor = Color(0xFF7B917B),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar Assinatura")
+            }
+        }
+    ) { paddingValues ->
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -84,7 +124,7 @@ private fun HomeContent(
     summary: com.payflow.app.domain.model.HomeSummary,
     modifier: Modifier = Modifier
 ) {
-    val currencyFormat = remember { 
+    val currencyFormat = remember {
         NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
     }
     
@@ -109,7 +149,7 @@ private fun HomeContent(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                
+
                 IconButton(
                     onClick = { /* Navegar para perfil */ },
                     modifier = Modifier
@@ -158,18 +198,18 @@ private fun HomeContent(
                             fontSize = 14.sp,
                             color = Color.White.copy(alpha = 0.9f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = currencyFormat.format(summary.monthlySpending),
                             fontSize = 36.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Câmbio USD-BRL: R$ 5,30 (Atualizado)",
                             fontSize = 12.sp,
@@ -206,18 +246,18 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.mostUsed?.name ?: "Netflix",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.Schedule,
                             contentDescription = null,
@@ -226,7 +266,7 @@ private fun HomeContent(
                         )
                     }
                 }
-                
+
                 // Próximo Pagamento (Amazon Prime - Azul)
                 Card(
                     modifier = Modifier
@@ -247,9 +287,9 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Amazon Prime\n(Amanhã)",
                             fontSize = 14.sp,
@@ -257,9 +297,9 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface,
                             lineHeight = 18.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = null,
@@ -297,24 +337,24 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.mostExpensive?.name ?: "Disney+",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Text(
                             text = summary.mostExpensive?.let { currencyFormat.format(it.value) } ?: "(R$ 109,90)",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.AttachMoney,
                             contentDescription = null,
@@ -323,7 +363,7 @@ private fun HomeContent(
                         )
                     }
                 }
-                
+
                 // Menos Usado (Spotify - Verde)
                 Card(
                     modifier = Modifier
@@ -344,18 +384,18 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.cheapest?.name ?: "Spotify",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
@@ -390,9 +430,9 @@ private fun HomeContent(
                             tint = Color(0xFFFFC107),
                             modifier = Modifier.size(24.dp)
                         )
-                        
+
                         Spacer(modifier = Modifier.width(8.dp))
-                        
+
                         Text(
                             text = "Atenção:",
                             fontSize = 16.sp,
@@ -400,17 +440,17 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = "Assinaturas Pouco Usadas",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     // Card de alerta - Apple TV+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -435,9 +475,9 @@ private fun HomeContent(
                                     tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(32.dp)
                                 )
-                                
+
                                 Spacer(modifier = Modifier.width(12.dp))
-                                
+
                                 Column {
                                     Text(
                                         text = "Apple TV+",
@@ -445,7 +485,7 @@ private fun HomeContent(
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    
+
                                     Text(
                                         text = "Assinar mesmo?",
                                         fontSize = 12.sp,
@@ -453,7 +493,7 @@ private fun HomeContent(
                                     )
                                 }
                             }
-                            
+
                             TextButton(
                                 onClick = { /* Ação de cancelar */ },
                                 colors = ButtonDefaults.textButtonColors(

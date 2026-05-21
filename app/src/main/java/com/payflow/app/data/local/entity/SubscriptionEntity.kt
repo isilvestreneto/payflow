@@ -3,6 +3,7 @@ package com.payflow.app.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.payflow.app.domain.model.User
 
@@ -15,17 +16,16 @@ import com.payflow.app.domain.model.User
             childColumns = ["usuario_id"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["usuario_id"])]
 )
-data class Subscription(
-
+data class SubscriptionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nome: String,
-    val valor: Double,
+    val valorCentavos: Long, // Armazenado como centavos para evitar erros de precisão
     val status: Boolean,
-    val dataInicio: String,
-    val dataFim: String,
+    val dataCobrancaMillis: Long, // Armazenado como Long para facilitar ordenação e consultas
     val formaPagamento: String,
     val categoria: String,
 
@@ -33,5 +33,5 @@ data class Subscription(
     val usuarioId: String,
 
     val dataCriacao: String,
-    val dataAtualizacao: String,
+    val dataAtualizacao: String
 )

@@ -8,4 +8,5 @@ sealed class Screen(val route: String) {
     data object MostExpensive : Screen("most_expensive")
     data object Cheapest : Screen("cheapest")
     data object MostUsed : Screen("most_used")
+    data object AddSubscription : Screen("add_subscription")
 }
