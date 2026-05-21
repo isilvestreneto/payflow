@@ -27,6 +27,7 @@ fun HomeScreen(
     onNavigateToMostExpensive: () -> Unit,
     onNavigateToCheapest: () -> Unit,
     onNavigateToMostUsed: () -> Unit,
+//    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()

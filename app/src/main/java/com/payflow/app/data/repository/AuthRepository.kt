@@ -1,18 +1,22 @@
 package com.payflow.app.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.payflow.app.BuildConfig
 import com.payflow.app.domain.model.TipoLogin
 import com.payflow.app.domain.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AuthRepository(
-    private val userDao: UserDao, private val credentialManager: CredentialManager
+    private val userDao: UserDao,
+    private val credentialManager: CredentialManager,
+    private val preferencias: SharedPreferences
 ) {
     // Login com email/senha (fake, valida no Room)
     suspend fun loginComEmail(email: String, senha: String): Result<User> {
@@ -36,7 +40,7 @@ class AuthRepository(
             try {
                 val googleIdOption =
                     GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
-                        .setServerClientId(WEB_CLIENT_ID).build()
+                        .setServerClientId(BuildConfig.WEB_CLIENT_ID).build()
 
                 val request =
                     GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
@@ -72,5 +76,38 @@ class AuthRepository(
                 Result.failure(e)
             }
         }
+    }
+
+    // Cadastro local (email/senha)
+    suspend fun cadastrar(nome: String, email: String, senha: String): Result<User> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val user = User(
+                    id = email,
+                    nome = nome,
+                    email = email,
+                    tipoLogin = TipoLogin.EMAIL,
+                    senha = TODO()
+                )
+                userDao.inserir(user)
+                Result.success(user)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    suspend fun usuarioLogado(): User? {
+        val userId = preferencias.getString("userId", null) ?: return null
+        return userDao.buscarPorId(userId)
+    }
+
+    // nos logins bem-sucedidos, salva o ID:
+    private fun salvarSessao(userId: String) {
+        preferencias.edit().putString("userId", userId).apply()
+    }
+
+    fun logout() {
+        preferencias.edit().remove("userId").apply()
     }
 }

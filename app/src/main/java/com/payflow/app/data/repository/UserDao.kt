@@ -13,4 +13,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE email = :email AND senha = :senha LIMIT 1")
     suspend fun buscarPorEmailESenha(email: String, senha: String): User?
+
+    @Query("SELECT * FROM users WHERE id = :userId")
+    fun buscarPorId(userId: String): User?
 }
