@@ -1,38 +1,23 @@
 package com.payflow.app.data.local.database
 
 import android.content.Context
+import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.TypeConverters
 import com.payflow.app.data.local.dao.SubscriptionDao
+import com.payflow.app.data.local.dao.UserDao
+import com.payflow.app.data.local.entity.SubscriptionEntity
+import com.payflow.app.domain.model.User
 
+@Database(entities = [SubscriptionEntity::class, User::class], version = 11, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun subscriptionDao(): SubscriptionDao
-
+    abstract fun userDao(): UserDao
 
     companion object {
-
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL(
-                    """
-                        CREATE TABLE IF NOT EXISTS `Subscription` (
-                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                            `nome` TEXT NOT NULL,
-                            `valor` REAL NOT NULL,
-                            `status` INTEGER NOT NULL,
-                            `dataInicio` TEXT NOT NULL,
-                            `dataFim` TEXT NOT NULL,
-                            `formaPagamento` TEXT NOT NULL,
-                            `categoria` TEXT NOT NULL
-                        )
-                    """
-                )
-            }
-        }
-
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -43,13 +28,11 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
-                    .build()
-
+                    .fallbackToDestructiveMigration(false)
+                .build()
                 INSTANCE = instance
                 instance
             }
         }
     }
-
 }

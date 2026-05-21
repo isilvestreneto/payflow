@@ -27,6 +27,7 @@ fun HomeScreen(
     onNavigateToMostExpensive: () -> Unit,
     onNavigateToCheapest: () -> Unit,
     onNavigateToMostUsed: () -> Unit,
+    onNavigateToAddSubscription: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -53,6 +54,15 @@ fun HomeScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToAddSubscription,
+                containerColor = Color(0xFF7B917B),
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar Assinatura")
+            }
         }
     ) { paddingValues ->
         when (val state = uiState) {
