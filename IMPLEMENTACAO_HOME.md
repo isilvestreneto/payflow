@@ -7,7 +7,6 @@ Implementei a tela **Home (Dashboard)** do aplicativo PayFlow com design inspira
 ## 🎨 Estrutura criada
 
 ### **1. Modelos de Domínio** (`domain/model/`)
-
 - ✅ `Subscription.kt` - Modelo principal de assinatura
 - ✅ `SubscriptionStatus.kt` - Enum: ACTIVE, CANCELED, PAUSED
 - ✅ `SubscriptionType.kt` - Enum: STREAMING, SERVICOS, TELEFONIA, BANCOS, IA, OUTROS
@@ -15,7 +14,6 @@ Implementei a tela **Home (Dashboard)** do aplicativo PayFlow com design inspira
 - ✅ `HomeSummary.kt` - Modelo de resumo para o dashboard
 
 ### **2. Use Cases** (`domain/usecase/`)
-
 - ✅ `GetSubscriptionsUseCase.kt` - Busca lista de assinaturas (mock temporário)
 - ✅ `GetHomeSummaryUseCase.kt` - Calcula todas as métricas do dashboard:
   - Quantidade de assinaturas ativas
@@ -26,7 +24,6 @@ Implementei a tela **Home (Dashboard)** do aplicativo PayFlow com design inspira
   - Assinatura mais usada
 
 ### **3. Tela Home** (`ui/screens/home/`)
-
 - ✅ `HomeScreen.kt` - Tela principal com cards interativos
 - ✅ `HomeViewModel.kt` - Gerencia estado e lógica de negócio
 - ✅ `HomeUiState.kt` - Estados: Loading, Success, Error
@@ -34,9 +31,7 @@ Implementei a tela **Home (Dashboard)** do aplicativo PayFlow com design inspira
 - ✅ `components/HighlightCard.kt` - Card destacado para gasto mensal
 
 ### **4. Telas de Detalhe** (`ui/screens/detail/`)
-
 Cada métrica tem sua própria tela de detalhe:
-
 - ✅ `ActiveSubscriptionsScreen.kt` - Mostra quantidade de assinaturas ativas
 - ✅ `MonthlySpendingScreen.kt` - Detalha o gasto mensal total
 - ✅ `AverageValueScreen.kt` - Exibe a média de valor
@@ -45,7 +40,6 @@ Cada métrica tem sua própria tela de detalhe:
 - ✅ `MostUsedScreen.kt` - Apresenta a assinatura mais utilizada
 
 ### **5. Navegação** (`ui/navigation/`)
-
 - ✅ `Screen.kt` - Definição de rotas
 - ✅ `PayFlowNavGraph.kt` - Grafo de navegação completo
 
@@ -54,13 +48,11 @@ Cada métrica tem sua própria tela de detalhe:
 A tela foi projetada usando os princípios do **Material 3** (Material You):
 
 ### 🎨 **Cores e Tema**
-
 - ✅ Usa `MaterialTheme.colorScheme` para cores dinâmicas
 - ✅ Cards com `primaryContainer`, `secondaryContainer`, `tertiaryContainer`
 - ✅ Suporte para tema claro e escuro
 
 ### 🎯 **Componentes Material**
-
 - ✅ `TopAppBar` com cores do Material 3
 - ✅ `Card` com cores semânticas
 - ✅ `FloatingActionButton` para adicionar assinaturas
@@ -68,7 +60,6 @@ A tela foi projetada usando os princípios do **Material 3** (Material You):
 - ✅ Tipografia Material 3 (`displayLarge`, `titleLarge`, etc.)
 
 ### 📱 **Material Icons usados**
-
 - `Icons.Default.AttachMoney` - Gasto mensal
 - `Icons.Default.Subscriptions` - Assinaturas ativas
 - `Icons.Default.TrendingUp` - Valor médio
@@ -103,7 +94,6 @@ A tela foi projetada usando os princípios do **Material 3** (Material You):
 ## 🚀 Próximos passos para integração
 
 ### **1. Configurar dependências no `build.gradle`**
-
 ```kotlin
 dependencies {
     // Jetpack Compose
@@ -111,13 +101,13 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-
+    
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
+    
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-
+    
     // Hilt (opcional, mas recomendado)
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
@@ -125,7 +115,6 @@ dependencies {
 ```
 
 ### **2. Integrar no MainActivity**
-
 ```kotlin
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,7 +128,7 @@ class MainActivity : ComponentActivity() {
                         getSubscriptionsUseCase = GetSubscriptionsUseCase()
                     )
                 )
-
+                
                 PayFlowNavGraph(
                     navController = navController,
                     homeViewModel = homeViewModel
@@ -151,9 +140,7 @@ class MainActivity : ComponentActivity() {
 ```
 
 ### **3. Conectar com Room (quando implementado)**
-
 Substituir o `GetSubscriptionsUseCase` para buscar dados reais:
-
 ```kotlin
 class GetSubscriptionsUseCase(
     private val subscriptionRepository: SubscriptionRepository
@@ -173,12 +160,11 @@ class GetSubscriptionsUseCase(
 ✅ **Componentes reutilizáveis** (SummaryCard, HighlightCard)  
 ✅ **Material Icons** em toda a interface  
 ✅ **Formatação monetária** em pt-BR (R$)  
-✅ **Responsive layout** com LazyColumn
+✅ **Responsive layout** com LazyColumn  
 
 ## 📸 Layout da Home
 
 A tela Home possui:
-
 - **TopBar** com título "PayFlow" e ícone de perfil
 - **Card destacado** de gasto mensal (grande, no topo)
 - **Seção "Suas Métricas"** com 2 cards (ativas e média)
