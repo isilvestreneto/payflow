@@ -23,9 +23,9 @@ data class SubscriptionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nome: String,
-    val valorCentavos: Long, // Armazenado como centavos para evitar erros de precisão
+    val valorCentavos: Long,
     val status: Boolean,
-    val dataCobrancaMillis: Long, // Armazenado como Long para facilitar ordenação e consultas
+    val dataCobrancaMillis: Long,
     val formaPagamento: String,
     val categoria: String,
 

@@ -8,7 +8,7 @@ import com.payflow.app.domain.model.User
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: User)
 
     @Query("SELECT * FROM users WHERE id = :id")

@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -46,16 +45,16 @@ fun SubscriptionScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Voltar",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0D1B2A)
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color(0xFF0D1B2A)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -68,7 +67,7 @@ fun SubscriptionScreen(
             Text(
                 text = if (viewModel.editingId == null) "Adicionar Nova Assinatura" else "Editar Assinatura",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 ),
@@ -82,12 +81,12 @@ fun SubscriptionScreen(
                 label = { Text("Nome do Serviço") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = Color.Gray,
-                    focusedBorderColor = Color(0xFF1B263B),
-                    unfocusedBorderColor = Color(0xFF1B263B)
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.outline,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                 )
             )
 
@@ -99,12 +98,12 @@ fun SubscriptionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = Color.Gray,
-                    focusedBorderColor = Color(0xFF1B263B),
-                    unfocusedBorderColor = Color(0xFF1B263B)
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.outline,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                 )
             )
 
@@ -121,12 +120,12 @@ fun SubscriptionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { viewModel.exibirDatePicker = true },
-                enabled = false, // Para garantir que o clique no modifier funcione sem o foco do textfield
+                enabled = false,
                 colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = Color.White,
-                    disabledLabelColor = Color.Gray,
-                    disabledBorderColor = Color(0xFF1B263B),
-                    disabledTrailingIconColor = Color.Gray
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledLabelColor = MaterialTheme.colorScheme.outline,
+                    disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.outline
                 ),
                 trailingIcon = {
                     IconButton(onClick = { viewModel.exibirDatePicker = true }) {
@@ -170,12 +169,12 @@ fun SubscriptionScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPayment) },
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedLabelColor = Color.Gray,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedBorderColor = Color(0xFF1B263B),
-                        unfocusedBorderColor = Color(0xFF1B263B)
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.outline,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
                 ExposedDropdownMenu(
@@ -207,12 +206,12 @@ fun SubscriptionScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
                     modifier = Modifier.menuAnchor().fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedLabelColor = Color.Gray,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedBorderColor = Color(0xFF1B263B),
-                        unfocusedBorderColor = Color(0xFF1B263B)
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.outline,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 )
                 ExposedDropdownMenu(
@@ -237,13 +236,13 @@ fun SubscriptionScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Ativa?", color = Color.White, fontSize = 16.sp)
+                Text(text = "Ativa?", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
                 Checkbox(
                     checked = viewModel.ativo,
                     onCheckedChange = { viewModel.ativo = it },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = Color(0xFF7B917B),
-                        uncheckedColor = Color.Gray
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.outline
                     )
                 )
             }
@@ -261,13 +260,14 @@ fun SubscriptionScreen(
                     .height(56.dp)
                     .padding(bottom = 24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (viewModel.isFormValid) Color(0xFF7B917B) else Color.Gray
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Text(
                     text = "Salvar",
-                    color = Color(0xFF0D1B2A),
+                    color = MaterialTheme.colorScheme.surface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )

@@ -14,10 +14,6 @@ class SubscriptionRepository(private val subscriptionDao: SubscriptionDao) {
         subscriptionDao.update(subscription)
     }
 
-    suspend fun getSubscriptionById(id: Int): SubscriptionEntity? {
-        return subscriptionDao.getById(id)
-    }
-
     fun getAllSubscriptions(): Flow<List<SubscriptionEntity>> {
         return subscriptionDao.getAllSubscriptions()
     }

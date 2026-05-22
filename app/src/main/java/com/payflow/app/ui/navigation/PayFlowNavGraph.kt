@@ -82,7 +82,6 @@ fun PayFlowNavGraph(
             composable(BottomNavItem.Profile.route) { ProfileScreen() }
             composable(BottomNavItem.Settings.route) { SettingsScreen() }
             
-            // Detail Screens (Simplificado para brevidade, mantendo lógica de dados)
             composable(Screen.ActiveSubscriptions.route) { ActiveSubscriptionsScreen(0, { navController.popBackStack() }) }
             composable(Screen.MonthlySpending.route) { MonthlySpendingScreen(0.0, { navController.popBackStack() }) }
             composable(Screen.AverageValue.route) { AverageValueScreen(0.0, { navController.popBackStack() }) }
@@ -91,6 +90,10 @@ fun PayFlowNavGraph(
                 val subscriptionViewModel: SubscriptionViewModel = viewModel(
                     factory = SubscriptionViewModelFactory(subscriptionRepository, userRepository)
                 )
+
+                LaunchedEffect(Unit) {
+                    subscriptionViewModel.resetForm()
+                }
 
                 SubscriptionScreen(
                     viewModel = subscriptionViewModel,
