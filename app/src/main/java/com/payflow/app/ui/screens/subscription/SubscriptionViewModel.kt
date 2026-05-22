@@ -44,11 +44,21 @@ class SubscriptionViewModel(
         }
     }
 
+    fun resetForm() {
+        editingId = null
+        nomeServico = ""
+        valorMensal = ""
+        dataMillis = System.currentTimeMillis()
+        formaPagamento = PaymentMethod.CREDIT_CARD
+        categoria = SubscriptionType.STREAMING
+        ativo = true
+        exibirDatePicker = false
+    }
+
     fun saveSubscription(onSuccess: () -> Unit) {
         if (!isFormValid) return
 
         viewModelScope.launch {
-
             userRepository.ensureDefaultUser()
             
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -61,7 +71,7 @@ class SubscriptionViewModel(
                 dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
                 formaPagamento = formaPagamento.displayName,
                 categoria = categoria.displayName,
-                usuarioId = "user_default", // Link com o usuário criado acima
+                usuarioId = "user_default",
                 dataCriacao = timestamp,
                 dataAtualizacao = timestamp
             )
@@ -71,6 +81,8 @@ class SubscriptionViewModel(
             } else {
                 subscriptionRepository.updateSubscription(entity)
             }
+            
+            resetForm()
             onSuccess()
         }
     }
