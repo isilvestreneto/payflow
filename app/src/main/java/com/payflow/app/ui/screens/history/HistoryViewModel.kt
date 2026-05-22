@@ -1,4 +1,4 @@
-package com.payflow.ui.screens.history
+package com.payflow.app.ui.screens.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

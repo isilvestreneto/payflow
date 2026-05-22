@@ -3,7 +3,6 @@ package com.payflow.app.ui.screens.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
-import com.payflow.ui.screens.history.HistoryViewModel
 
 class HistoryViewModelFactory(
     private val getSubscriptionsUseCase: GetSubscriptionsUseCase

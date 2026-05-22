@@ -18,8 +18,8 @@ import com.payflow.app.ui.screens.home.HomeUiState
 import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.ui.screens.settings.SettingsScreen
-import com.payflow.ui.screens.history.HistoryScreen
-import com.payflow.ui.screens.history.HistoryViewModel
+import com.payflow.app.ui.screens.history.HistoryScreen
+import com.payflow.app.ui.screens.history.HistoryViewModel
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 
 @Composable
