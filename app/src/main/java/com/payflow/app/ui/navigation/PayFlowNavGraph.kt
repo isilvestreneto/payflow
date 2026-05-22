@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.payflow.app.ui.screens.cards.CardsScreen
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryViewModelFactory
@@ -20,6 +22,7 @@ import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.ui.screens.settings.SettingsScreen
 import com.payflow.app.ui.screens.history.HistoryScreen
 import com.payflow.app.ui.screens.history.HistoryViewModel
+import com.payflow.app.ui.screens.historydetails.HistoryDetails
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 
 @Composable
@@ -107,7 +110,7 @@ fun PayFlowNavGraph(
                 val historyViewModel: HistoryViewModel = viewModel(factory = factory)
                 HistoryScreen(
                     onNavigateToDetail = { subscriptionId ->
-                        navController.navigate(Screen.Detail.createRoute(subscriptionId))
+                        navController.navigate(Screen.HistoryDetails.createRoute(subscriptionId))
                     },
                     onNavigateToCreate = {
                         navController.navigate(Screen.Create.route)
@@ -196,6 +199,22 @@ fun PayFlowNavGraph(
                     subscription = subscription,
                     onNavigateBack = { navController.popBackStack() }
                 )
+            }
+            
+            composable(
+                route = Screen.HistoryDetails.route,
+                arguments = listOf(navArgument("subscriptionId") { type = NavType.StringType })
+            ) {
+                val subscriptions by getSubscriptionsUseCase().collectAsState(initial = emptyList())
+                val subscriptionId = it.arguments?.getString("subscriptionId")
+                val subscription = subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
+                
+                if (subscription != null) {
+                    HistoryDetails(
+                        subscription = subscription,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }
