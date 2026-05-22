@@ -22,50 +22,10 @@ import java.util.*
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onNavigateToActiveSubscriptions: () -> Unit,
-    onNavigateToMonthlySpending: () -> Unit,
-    onNavigateToAverageValue: () -> Unit,
-    onNavigateToMostExpensive: () -> Unit,
-    onNavigateToCheapest: () -> Unit,
-    onNavigateToMostUsed: () -> Unit,
-    onNavigateToAddSubscription: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        "PayFlow",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                actions = {
-                    IconButton(onClick = { /* Navegar para perfil */ }) {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Perfil"
-                        )
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToAddSubscription,
-                containerColor = Color(0xFF7B917B),
-                contentColor = Color.White
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Adicionar Assinatura")
-            }
-        }
-    ) { paddingValues ->
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -79,7 +39,7 @@ fun HomeScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
-            
+
             is HomeUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -111,7 +71,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             is HomeUiState.Success -> {
                 HomeContent(summary = state.summary)
             }
@@ -127,7 +87,7 @@ private fun HomeContent(
     val currencyFormat = remember {
         NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
     }
-    
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -165,7 +125,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Card principal - Total Mensal
         item {
             Card(
@@ -219,7 +179,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Duas colunas - Última Assinatura e Próximo Pagamento
         item {
             Row(
@@ -310,7 +270,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Duas colunas - Custo Mais Alto e Menos Usado
         item {
             Row(
@@ -406,7 +366,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Seção de Atenção - Assinaturas Pouco Usadas
         item {
             Card(
