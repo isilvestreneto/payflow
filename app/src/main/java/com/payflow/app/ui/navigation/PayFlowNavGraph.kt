@@ -16,12 +16,10 @@ import com.payflow.app.ui.screens.cards.CardsScreen
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryScreen
 import com.payflow.app.ui.screens.home.HomeScreen
-import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.home.HomeUiState
-import com.payflow.app.ui.screens.login.LoginScreen
+import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.ui.screens.settings.SettingsScreen
-import com.payflow.app.ui.screens.subscription.SubscriptionScreen
 import com.payflow.app.ui.screens.subscription.SubscriptionViewModel
 import com.payflow.app.ui.screens.subscription.SubscriptionViewModelFactory
 import com.payflow.app.viewmodel.AuthViewModel
@@ -31,8 +29,7 @@ fun PayFlowNavGraph(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     subscriptionRepository: SubscriptionRepository,
-    userRepository: UserRepository
-    homeViewModel: HomeViewModel,
+    userRepository: UserRepository,
     authViewModel: AuthViewModel
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -40,6 +37,7 @@ fun PayFlowNavGraph(
 
 
     // Verificar se deve mostrar bottom navigation
+
     val showBottomBar = currentDestination?.route in BottomNavItem.items.map { it.route }
 
     Scaffold(
@@ -47,7 +45,6 @@ fun PayFlowNavGraph(
             if (showBottomBar) {
                 NavigationBar {
                     BottomNavItem.items.forEach { item ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
                         val selected = currentDestination?.hierarchy?.any {
                             it.route == item.route
                         } == true

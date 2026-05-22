@@ -2,6 +2,7 @@ package com.payflow.app
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.credentials.CredentialManager
 import android.util.Log
 import androidx.credentials.CredentialManager
 import android.os.Bundle
@@ -13,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.payflow.app.data.local.database.AppDatabase
@@ -20,6 +23,9 @@ import com.payflow.app.data.local.repository.SubscriptionRepository
 import com.payflow.app.data.local.repository.UserRepository
 import com.payflow.app.data.repository.AppDatabase
 import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.database.AppDatabase
+import com.payflow.app.data.local.repository.SubscriptionRepository
+import com.payflow.app.data.local.repository.UserRepository
 import com.payflow.app.domain.usecase.GetHomeSummaryUseCase
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 import com.payflow.app.ui.navigation.PayFlowNavGraph
@@ -79,10 +85,10 @@ fun PayFlowApp() {
 
     PayFlowNavGraph(
         navController = navController,
-         homeViewModel = homeViewModel,
+        homeViewModel = homeViewModel,
         subscriptionRepository = subscriptionRepository,
+        authViewModel = authViewModel,
         userRepository = userRepository,
-        authViewModel = authViewModel
     )
 }
 
