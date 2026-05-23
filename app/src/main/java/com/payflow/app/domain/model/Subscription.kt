@@ -15,6 +15,8 @@ data class Subscription(
     val lastUseDate: Date? = null,
     val useCount: Int = 0, // Quantas vezes usou no mês
     val notes: String? = null,
+    val iconResId: Int? = null, // ID do recurso drawable do ícone
+    val iconUri: String? = null, // URI para ícone customizado/upload
     val createdAt: LocalDate = LocalDate.now(),
     val updatedAt: LocalDate = LocalDate.now()
 )
