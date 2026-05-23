@@ -25,7 +25,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -39,7 +39,7 @@ fun HomeScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
-            
+
             is HomeUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -71,7 +71,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             is HomeUiState.Success -> {
                 HomeContent(summary = state.summary)
             }
@@ -84,10 +84,10 @@ private fun HomeContent(
     summary: com.payflow.app.domain.model.HomeSummary,
     modifier: Modifier = Modifier
 ) {
-    val currencyFormat = remember { 
+    val currencyFormat = remember {
         NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
     }
-    
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -109,7 +109,7 @@ private fun HomeContent(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-                
+
                 IconButton(
                     onClick = { /* Navegar para perfil */ },
                     modifier = Modifier
@@ -125,7 +125,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Card principal - Total Mensal
         item {
             Card(
@@ -158,18 +158,18 @@ private fun HomeContent(
                             fontSize = 14.sp,
                             color = Color.White.copy(alpha = 0.9f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = currencyFormat.format(summary.monthlySpending),
                             fontSize = 36.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Câmbio USD-BRL: R$ 5,30 (Atualizado)",
                             fontSize = 12.sp,
@@ -179,7 +179,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Duas colunas - Última Assinatura e Próximo Pagamento
         item {
             Row(
@@ -206,18 +206,18 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.mostUsed?.name ?: "Netflix",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.Schedule,
                             contentDescription = null,
@@ -226,7 +226,7 @@ private fun HomeContent(
                         )
                     }
                 }
-                
+
                 // Próximo Pagamento (Amazon Prime - Azul)
                 Card(
                     modifier = Modifier
@@ -247,9 +247,9 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Amazon Prime\n(Amanhã)",
                             fontSize = 14.sp,
@@ -257,9 +257,9 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface,
                             lineHeight = 18.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = null,
@@ -270,7 +270,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Duas colunas - Custo Mais Alto e Menos Usado
         item {
             Row(
@@ -297,24 +297,24 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.mostExpensive?.name ?: "Disney+",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Text(
                             text = summary.mostExpensive?.let { currencyFormat.format(it.value) } ?: "(R$ 109,90)",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.AttachMoney,
                             contentDescription = null,
@@ -323,7 +323,7 @@ private fun HomeContent(
                         )
                     }
                 }
-                
+
                 // Menos Usado (Spotify - Verde)
                 Card(
                     modifier = Modifier
@@ -344,18 +344,18 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = summary.cheapest?.name ?: "Spotify",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        
+
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
@@ -366,7 +366,7 @@ private fun HomeContent(
                 }
             }
         }
-        
+
         // Seção de Atenção - Assinaturas Pouco Usadas
         item {
             Card(
@@ -390,9 +390,9 @@ private fun HomeContent(
                             tint = Color(0xFFFFC107),
                             modifier = Modifier.size(24.dp)
                         )
-                        
+
                         Spacer(modifier = Modifier.width(8.dp))
-                        
+
                         Text(
                             text = "Atenção:",
                             fontSize = 16.sp,
@@ -400,17 +400,17 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = "Assinaturas Pouco Usadas",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
-                    
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    
+
                     // Card de alerta - Apple TV+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -435,9 +435,9 @@ private fun HomeContent(
                                     tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(32.dp)
                                 )
-                                
+
                                 Spacer(modifier = Modifier.width(12.dp))
-                                
+
                                 Column {
                                     Text(
                                         text = "Apple TV+",
@@ -445,7 +445,7 @@ private fun HomeContent(
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    
+
                                     Text(
                                         text = "Assinar mesmo?",
                                         fontSize = 12.sp,
@@ -453,7 +453,7 @@ private fun HomeContent(
                                     )
                                 }
                             }
-                            
+
                             TextButton(
                                 onClick = { /* Ação de cancelar */ },
                                 colors = ButtonDefaults.textButtonColors(

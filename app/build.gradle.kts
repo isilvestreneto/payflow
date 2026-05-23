@@ -2,10 +2,10 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
     alias(libs.plugins.ksp)
-    kotlin("android")
+    id("com.google.gms.google-services")
 }
 
 val localProperties = Properties()
@@ -14,7 +14,6 @@ localProperties.load(rootProject.file("local.properties").inputStream())
 android {
     namespace = "com.payflow.app"
     compileSdk = 36
-
 
     defaultConfig {
         applicationId = "com.payflow.app"
@@ -43,6 +42,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -87,7 +87,12 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+    val roomVersion = "2.7.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")  // adiciona isso
 }

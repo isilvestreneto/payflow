@@ -15,13 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.Subscription
-import androidx.compose.runtime.livedata.observeAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -568,13 +566,13 @@ private fun SubscriptionCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     StatusBadge(status = subscription.status)
-                    Text(
-                        text = subscription.startDate.format(
-                            DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                        ),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+//                    Text(
+//                        text = subscription.startDate.format(
+//                            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+//                        ),
+//                        style = MaterialTheme.typography.labelSmall,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
                 }
             }
 
