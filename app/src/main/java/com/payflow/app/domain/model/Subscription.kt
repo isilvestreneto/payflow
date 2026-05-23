@@ -1,10 +1,11 @@
 package com.payflow.app.domain.model
 
-import java.time.LocalDate
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.util.Date
 
-data class Subscription(
+data class Subscription @RequiresApi(Build.VERSION_CODES.O) constructor(
     val id: Long = 0,
     val name: String,
     val value: Double,
