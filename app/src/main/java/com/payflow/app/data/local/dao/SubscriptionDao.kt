@@ -17,8 +17,11 @@ interface SubscriptionDao {
     suspend fun update(subscription: SubscriptionEntity)
 
     @Query("SELECT * FROM subscriptions WHERE id = :id")
-    suspend fun getById(id: Int): SubscriptionEntity?
+    suspend fun getById(id: String): SubscriptionEntity?
 
     @Query("SELECT * FROM subscriptions ORDER BY dataCobrancaMillis ASC")
     fun getAllSubscriptions(): Flow<List<SubscriptionEntity>>
+
+    @Query("SELECT * FROM subscriptions WHERE usuario_id = :userId ORDER BY dataCobrancaMillis ASC")
+    fun getSubscriptionsByUserId(userId: String): Flow<List<SubscriptionEntity>>
 }

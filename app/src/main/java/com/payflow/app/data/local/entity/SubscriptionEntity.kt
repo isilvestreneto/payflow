@@ -6,6 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.payflow.app.domain.model.User
+import com.payflow.app.domain.model.SubscriptionStatus
+import java.util.UUID
 
 @Entity(
     tableName = "subscriptions",
@@ -20,11 +22,11 @@ import com.payflow.app.domain.model.User
     indices = [Index(value = ["usuario_id"])]
 )
 data class SubscriptionEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
     val nome: String,
     val valorCentavos: Long,
-    val status: Boolean,
+    val status: SubscriptionStatus,
     val dataCobrancaMillis: Long,
     val formaPagamento: String,
     val categoria: String,

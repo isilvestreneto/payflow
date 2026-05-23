@@ -8,12 +8,12 @@ import com.payflow.app.domain.model.User
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun inserir(user: User)
 
     @Query("SELECT * FROM users WHERE email = :email AND senha = :senha LIMIT 1")
     suspend fun buscarPorEmailESenha(email: String, senha: String): User?
 
     @Query("SELECT * FROM users WHERE id = :userId")
-    fun buscarPorId(userId: String): User?
+    suspend fun buscarPorId(userId: String): User?
 }

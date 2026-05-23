@@ -8,18 +8,22 @@ import androidx.lifecycle.viewModelScope
 import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.data.local.repository.SubscriptionRepository
 import com.payflow.app.data.local.repository.UserRepository
+import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.domain.model.PaymentMethod
+import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.SubscriptionType
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToLong
 
 class SubscriptionViewModel(
     private val subscriptionRepository: SubscriptionRepository,
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    var editingId by mutableStateOf<Int?>(null)
+    var editingId by mutableStateOf<String?>(null)
     var nomeServico by mutableStateOf("")
     var valorMensal by mutableStateOf("")
     var dataMillis by mutableStateOf<Long?>(System.currentTimeMillis())
@@ -38,8 +42,8 @@ class SubscriptionViewModel(
                 .replace(",", ".")
                 .trim()
             if (limpo.isEmpty()) return 0L
-            Math.round(limpo.toDouble() * 100)
-        } catch (e: Exception) {
+            (limpo.toDouble() * 100).roundToLong()
+        } catch (_: Exception) {
             0L
         }
     }
@@ -59,22 +63,40 @@ class SubscriptionViewModel(
         if (!isFormValid) return
 
         viewModelScope.launch {
-            userRepository.ensureDefaultUser()
+            val user = authRepository.usuarioLogado()
+            val usuarioLogadoId = user?.id ?: run {
+                userRepository.ensureDefaultUser()
+                "user_default"
+            }
             
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
             
-            val entity = SubscriptionEntity(
-                id = editingId ?: 0, // id 0 indica auto-incremento para o Room
-                nome = nomeServico,
-                valorCentavos = parseMoedaParaCentavos(valorMensal),
-                status = ativo,
-                dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
-                formaPagamento = formaPagamento.displayName,
-                categoria = categoria.displayName,
-                usuarioId = "user_default",
-                dataCriacao = timestamp,
-                dataAtualizacao = timestamp
-            )
+            val entity = if (editingId == null) {
+                SubscriptionEntity(
+                    nome = nomeServico,
+                    valorCentavos = parseMoedaParaCentavos(valorMensal),
+                    status = if (ativo) SubscriptionStatus.ACTIVE else SubscriptionStatus.PAUSED,
+                    dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
+                    formaPagamento = formaPagamento.displayName,
+                    categoria = categoria.displayName,
+                    usuarioId = usuarioLogadoId,
+                    dataCriacao = timestamp,
+                    dataAtualizacao = timestamp
+                )
+            } else {
+                SubscriptionEntity(
+                    id = editingId!!,
+                    nome = nomeServico,
+                    valorCentavos = parseMoedaParaCentavos(valorMensal),
+                    status = if (ativo) SubscriptionStatus.ACTIVE else SubscriptionStatus.PAUSED,
+                    dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
+                    formaPagamento = formaPagamento.displayName,
+                    categoria = categoria.displayName,
+                    usuarioId = usuarioLogadoId,
+                    dataCriacao = timestamp,
+                    dataAtualizacao = timestamp
+                )
+            }
 
             if (editingId == null) {
                 subscriptionRepository.insertSubscription(entity)

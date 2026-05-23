@@ -3,7 +3,6 @@ package com.payflow.app.domain.usecase
 import com.payflow.app.data.local.repository.SubscriptionRepository
 import com.payflow.app.domain.model.PaymentMethod
 import com.payflow.app.domain.model.Subscription
-import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.SubscriptionType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,10 +18,10 @@ class GetSubscriptionsUseCase(
         return repository.getAllSubscriptions().map { entities ->
             entities.map { entity ->
                 Subscription(
-                    id = entity.id.toLong(),
+                    id = entity.id,
                     name = entity.nome,
                     value = entity.valorCentavos / 100.0,
-                    status = if (entity.status) SubscriptionStatus.ACTIVE else SubscriptionStatus.CANCELED,
+                    status = entity.status,
                     type = SubscriptionType.entries.find { it.displayName == entity.categoria } ?: SubscriptionType.OUTROS,
                     paymentMethod = PaymentMethod.entries.find { it.displayName == entity.formaPagamento } ?: PaymentMethod.CREDIT_CARD,
                     billingDate = extractDayFromMillis(entity.dataCobrancaMillis),

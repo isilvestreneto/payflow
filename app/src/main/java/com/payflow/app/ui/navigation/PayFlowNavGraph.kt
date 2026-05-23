@@ -1,9 +1,11 @@
 package com.payflow.app.ui.navigation
 
+import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -12,6 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.payflow.app.data.local.database.AppDatabase
+import com.payflow.app.data.local.repository.SubscriptionRepository
+import com.payflow.app.data.local.repository.UserRepository
+import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryViewModelFactory
 import com.payflow.app.ui.screens.home.HomeScreen
@@ -23,8 +29,12 @@ import com.payflow.app.ui.screens.settings.SettingsScreen
 import com.payflow.app.viewmodel.AuthViewModel
 import com.payflow.app.ui.screens.historydetails.HistoryDetails
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
+import com.payflow.app.ui.screens.subscription.SubscriptionScreen
+import com.payflow.app.ui.screens.subscription.SubscriptionViewModel
+import com.payflow.app.ui.screens.subscription.SubscriptionViewModelFactory
 import com.payflow.ui.screens.history.HistoryScreen
 import com.payflow.ui.screens.history.HistoryViewModel
+import androidx.credentials.CredentialManager
 
 @Composable
 fun PayFlowNavGraph(
@@ -186,7 +196,7 @@ fun PayFlowNavGraph(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
-            
+
             composable(
                 route = Screen.HistoryDetails.route,
                 arguments = listOf(navArgument("subscriptionId") { type = NavType.StringType })
@@ -194,13 +204,41 @@ fun PayFlowNavGraph(
                 val subscriptions by getSubscriptionsUseCase().collectAsState(initial = emptyList())
                 val subscriptionId = it.arguments?.getString("subscriptionId")
                 val subscription = subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
-                
+
                 if (subscription != null) {
                     HistoryDetails(
                         subscription = subscription,
                         onBackClick = { navController.popBackStack() }
                     )
                 }
+            }
+
+            composable(Screen.Create.route) {
+                val context = LocalContext.current
+                val database = remember { AppDatabase.getDatabase(context) }
+                val sharedPreferences = remember { context.getSharedPreferences("payflow_prefs", Context.MODE_PRIVATE) }
+
+                val subscriptionRepo = remember { SubscriptionRepository(database.subscriptionDao()) }
+                val userRepo = remember { UserRepository(database.userDao()) }
+                val authRepo = remember {
+                    AuthRepository(
+                        userDao = database.userDao(),
+                        credentialManager = CredentialManager.create(context),
+                        preferencias = sharedPreferences
+                    )
+                }
+
+                val factory = SubscriptionViewModelFactory(subscriptionRepo, authRepo, userRepo)
+                val subscriptionViewModel: SubscriptionViewModel = viewModel(factory = factory)
+
+                SubscriptionScreen(
+                    viewModel = subscriptionViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onSaveSuccess = {
+                        navController.popBackStack()
+                    },
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }
