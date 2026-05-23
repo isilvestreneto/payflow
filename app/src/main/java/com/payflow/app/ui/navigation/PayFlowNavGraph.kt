@@ -15,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.payflow.app.ui.preferences.AppThemeMode
 import com.payflow.app.ui.preferences.CurrencyPreference
-import com.payflow.app.ui.screens.cards.CardsScreen
 import androidx.navigation.navArgument
 import com.payflow.app.data.local.database.AppDatabase
 import com.payflow.app.data.local.repository.SubscriptionRepository
@@ -28,7 +27,6 @@ import com.payflow.app.ui.screens.home.HomeUiState
 import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.login.LoginScreen
 import com.payflow.app.ui.screens.profile.ProfileScreen
-import com.payflow.app.ui.screens.settings.SettingsScreen
 import com.payflow.app.viewmodel.AuthViewModel
 import com.payflow.app.ui.screens.historydetails.HistoryDetails
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
@@ -136,10 +134,6 @@ fun PayFlowNavGraph(
                     onProfilePhotoChange = onProfilePhotoChange,
                     onSignOut = onSignOut
                 )
-            }
-
-            composable(BottomNavItem.Settings.route) {
-                SettingsScreen()
             }
 
             // Detail Screens

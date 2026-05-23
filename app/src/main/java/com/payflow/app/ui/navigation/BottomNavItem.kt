@@ -27,13 +27,7 @@ sealed class BottomNavItem(
         label = "Perfil"
     )
     
-    data object Settings : BottomNavItem(
-        route = "settings",
-        icon = Icons.Default.Settings,
-        label = "Ajustes"
-    )
-    
     companion object {
-        val items = listOf(Home, History, Profile, Settings)
+        val items = listOf(Home, History, Profile)
     }
 }
