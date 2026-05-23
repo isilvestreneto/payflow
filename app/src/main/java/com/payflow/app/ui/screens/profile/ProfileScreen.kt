@@ -1,6 +1,5 @@
 package com.payflow.app.ui.screens.profile
 
-import android.net.Uri
 import android.widget.ImageView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,17 +46,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.payflow.app.R
+import com.payflow.app.domain.model.User
 import com.payflow.app.ui.preferences.AppThemeMode
 import com.payflow.app.ui.preferences.CurrencyPreference
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    usuario: User?,
     currentThemeMode: AppThemeMode,
     onThemeModeChange: (AppThemeMode) -> Unit,
     currentCurrency: CurrencyPreference,
@@ -205,8 +208,8 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             ProfileHeaderCard(
-                name = "Ivanildo Ferreira",
-                email = "ivanildo.ferreira@gmail.com",
+                name = usuario?.nome ?: "",
+                email = usuario?.email ?: "",
                 profilePhotoUri = profilePhotoUri,
                 onPhotoClick = { showPhotoDialog = true }
             )
@@ -294,10 +297,6 @@ private fun ProfileAvatar(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val imageUri = remember(profilePhotoUri) {
-        profilePhotoUri?.let(Uri::parse)
-    }
-
     Box(
         modifier = modifier
             .size(76.dp)
@@ -306,24 +305,28 @@ private fun ProfileAvatar(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.BottomEnd
     ) {
-        AndroidView(
-            factory = { context ->
-                ImageView(context).apply {
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                    setImageResource(R.drawable.profile_placeholder_animal)
-                }
-            },
-            modifier = Modifier
-                .matchParentSize()
-                .clip(CircleShape),
-            update = { imageView ->
-                if (imageUri != null) {
-                    imageView.setImageURI(imageUri)
-                } else {
-                    imageView.setImageResource(R.drawable.profile_placeholder_animal)
-                }
-            }
-        )
+        if (profilePhotoUri != null) {
+            AsyncImage(
+                model = profilePhotoUri,
+                contentDescription = "Foto de perfil",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(CircleShape)
+            )
+        } else {
+            AndroidView(
+                factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        setImageResource(R.drawable.profile_placeholder_animal)
+                    }
+                },
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(CircleShape)
+            )
+        }
 
         Box(
             modifier = Modifier

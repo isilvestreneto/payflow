@@ -11,6 +11,8 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.payflow.app.BuildConfig
 import com.payflow.app.domain.model.TipoLogin
 import com.payflow.app.domain.model.User
+import com.payflow.app.ui.preferences.AppThemeMode
+import com.payflow.app.ui.preferences.CurrencyPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
@@ -64,7 +66,8 @@ class AuthRepository(
                                 nome = googleCred.displayName ?: "",
                                 email = googleCred.id,
                                 tipoLogin = TipoLogin.GOOGLE,
-                                senha = ""
+                                senha = null,
+                                fotoUrl = googleCred.profilePictureUri?.toString()
                             )
                             userDao.inserir(user)
                             salvarSessao(user.id)
@@ -149,6 +152,18 @@ class AuthRepository(
             } catch (e: Exception) {
                 Log.e("AuthRepository", "Erro ao criar usuário de teste: ${e.message}", e)
             }
+        }
+    }
+
+    suspend fun updateTheme(userId: String, mode: AppThemeMode) {
+        withContext(Dispatchers.IO) {
+            userDao.updateTheme(userId, mode)
+        }
+    }
+
+    suspend fun updateCurrency(userId: String, currency: CurrencyPreference) {
+        withContext(Dispatchers.IO) {
+            userDao.updateCurrency(userId, currency)
         }
     }
 }
