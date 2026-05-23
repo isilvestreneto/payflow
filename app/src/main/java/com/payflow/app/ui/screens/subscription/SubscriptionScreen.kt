@@ -26,7 +26,8 @@ import java.util.*
 fun SubscriptionScreen(
     viewModel: SubscriptionViewModel,
     onBackClick: () -> Unit,
-    onSaveSuccess: () -> Unit
+    onSaveSuccess: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     var expandedPayment by remember { mutableStateOf(false) }

@@ -1,6 +1,6 @@
 package com.payflow.app.data.local.repository
 
-import com.payflow.app.data.local.dao.UserDao
+import com.payflow.app.data.repository.UserDao
 import com.payflow.app.domain.model.TipoLogin
 import com.payflow.app.domain.model.User
 
@@ -13,6 +13,6 @@ class UserRepository(private val userDao: UserDao) {
             tipoLogin = TipoLogin.EMAIL,
             senha = "123"
         )
-        userDao.insert(defaultUser)
+        userDao.inserir(defaultUser)
     }
 }
