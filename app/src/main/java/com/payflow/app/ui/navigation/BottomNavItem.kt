@@ -15,12 +15,6 @@ sealed class BottomNavItem(
         label = "Início"
     )
     
-    data object Cards : BottomNavItem(
-        route = "cards",
-        icon = Icons.Default.CreditCard,
-        label = "Cartões"
-    )
-    
     data object History : BottomNavItem(
         route = "history",
         icon = Icons.Default.History,
@@ -40,6 +34,6 @@ sealed class BottomNavItem(
     )
     
     companion object {
-        val items = listOf(Home, Cards, History, Profile, Settings)
+        val items = listOf(Home, History, Profile, Settings)
     }
 }

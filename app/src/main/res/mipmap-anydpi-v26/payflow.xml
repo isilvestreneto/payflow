@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/payflow_background"/>
+    <foreground android:drawable="@drawable/payflow_foreground"/>
+</adaptive-icon>
