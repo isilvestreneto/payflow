@@ -1,25 +1,36 @@
 package com.payflow.app
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+import androidx.credentials.CredentialManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.payflow.app.data.repository.AppDatabase
+import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.domain.usecase.GetHomeSummaryUseCase
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 import com.payflow.app.ui.navigation.PayFlowNavGraph
 import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.home.HomeViewModelFactory
 import com.payflow.app.ui.theme.PayFlowTheme
+import com.payflow.app.viewmodel.AuthViewModel
+import com.payflow.app.viewmodel.AuthViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.e("MainActivity", "========================================")
+        Log.e("MainActivity", "APP INICIADO - onCreate")
+        Log.e("MainActivity", "========================================")
         enableEdgeToEdge()
         setContent {
             PayFlowTheme {
@@ -32,8 +43,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PayFlowApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    
-    // TODO: Substituir por injeção de dependência com Hilt quando configurado
+
+    val context = LocalContext.current
+
+    val sharedPreferences = context.getSharedPreferences("payflow_prefs", Context.MODE_PRIVATE)
+
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(
+            repository = AuthRepository(
+                userDao = AppDatabase.get(context).userDao(),
+                credentialManager = CredentialManager.create(context),
+                sharedPreferences
+            )
+        )
+    )
+
     val homeViewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(
             getHomeSummaryUseCase = GetHomeSummaryUseCase(
@@ -41,11 +65,12 @@ fun PayFlowApp(modifier: Modifier = Modifier) {
             )
         )
     )
-    
+
     PayFlowNavGraph(
         navController = navController,
         homeViewModel = homeViewModel,
-        getSubscriptionsUseCase = GetSubscriptionsUseCase()
+        authViewModel = authViewModel,
+        getSubscriptionsUseCase = GetSubscriptionsUseCase(),
     )
 }
 
