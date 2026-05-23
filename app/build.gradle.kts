@@ -101,5 +101,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")  // adiciona isso
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }

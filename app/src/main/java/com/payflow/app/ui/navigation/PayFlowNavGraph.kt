@@ -18,7 +18,6 @@ import com.payflow.app.ui.preferences.CurrencyPreference
 import androidx.navigation.navArgument
 import com.payflow.app.data.local.database.AppDatabase
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.local.repository.UserRepository
 import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryViewModelFactory
@@ -53,6 +52,16 @@ fun PayFlowNavGraph(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val authState by authViewModel.state.collectAsState()
+
+    LaunchedEffect(authState.usuario) {
+        if (authState.usuario == null) {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     // Verificar se deve mostrar bottom navigation
     val showBottomBar = currentDestination?.route in BottomNavItem.items.map { it.route }
@@ -125,12 +134,14 @@ fun PayFlowNavGraph(
             }
 
             composable(BottomNavItem.Profile.route) {
+                val authState by authViewModel.state.collectAsState()
                 ProfileScreen(
+                    usuario = authState.usuario,
                     currentThemeMode = currentThemeMode,
                     onThemeModeChange = onThemeModeChange,
                     currentCurrency = currentCurrency,
                     onCurrencyChange = onCurrencyChange,
-                    profilePhotoUri = profilePhotoUri,
+                    profilePhotoUri = profilePhotoUri ?: authState.usuario?.fotoUrl,
                     onProfilePhotoChange = onProfilePhotoChange,
                     onSignOut = onSignOut
                 )
@@ -215,7 +226,8 @@ fun PayFlowNavGraph(
             ) {
                 val subscriptions by getSubscriptionsUseCase().collectAsState(initial = emptyList())
                 val subscriptionId = it.arguments?.getString("subscriptionId")
-                val subscription = subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
+                val subscription =
+                    subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
 
                 if (subscription != null) {
                     HistoryDetails(
@@ -228,10 +240,11 @@ fun PayFlowNavGraph(
             composable(Screen.Create.route) {
                 val context = LocalContext.current
                 val database = remember { AppDatabase.getDatabase(context) }
-                val sharedPreferences = remember { context.getSharedPreferences("payflow_prefs", Context.MODE_PRIVATE) }
+                val sharedPreferences =
+                    remember { context.getSharedPreferences("payflow_prefs", Context.MODE_PRIVATE) }
 
-                val subscriptionRepo = remember { SubscriptionRepository(database.subscriptionDao()) }
-                val userRepo = remember { UserRepository(database.userDao()) }
+                val subscriptionRepo =
+                    remember { SubscriptionRepository(database.subscriptionDao()) }
                 val authRepo = remember {
                     AuthRepository(
                         userDao = database.userDao(),
@@ -240,15 +253,13 @@ fun PayFlowNavGraph(
                     )
                 }
 
-                val factory = SubscriptionViewModelFactory(subscriptionRepo, authRepo, userRepo)
+                val factory = remember { SubscriptionViewModelFactory(subscriptionRepo, authRepo) }
                 val subscriptionViewModel: SubscriptionViewModel = viewModel(factory = factory)
 
                 SubscriptionScreen(
                     viewModel = subscriptionViewModel,
                     onBackClick = { navController.popBackStack() },
-                    onSaveSuccess = {
-                        navController.popBackStack()
-                    },
+                    onSaveSuccess = { navController.popBackStack() },
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

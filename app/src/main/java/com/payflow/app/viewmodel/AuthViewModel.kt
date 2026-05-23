@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.ui.preferences.AppThemeMode
+import com.payflow.app.ui.preferences.CurrencyPreference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,8 +21,6 @@ class AuthViewModel(
 
     init {
         viewModelScope.launch {
-            repository.criarUsuarioTeste()
-
             val user = repository.usuarioLogado()
             if (user != null) {
                 _state.value = AuthUiState(usuario = user)
@@ -37,10 +37,7 @@ class AuthViewModel(
                 }
                 .onFailure { e ->
                     Log.e("AuthViewModel", "Cadastro falhou: ${e.message}")
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        erro = e.message
-                    )
+                    _state.value = _state.value.copy(isLoading = false, erro = e.message)
                 }
         }
     }
@@ -54,10 +51,7 @@ class AuthViewModel(
                 }
                 .onFailure { e ->
                     Log.e("AuthViewModel", "Login falhou: ${e.message}")
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        erro = e.message
-                    )
+                    _state.value = _state.value.copy(isLoading = false, erro = e.message)
                 }
         }
     }
@@ -70,11 +64,24 @@ class AuthViewModel(
                     _state.value = AuthUiState(usuario = user)
                 }
                 .onFailure { e ->
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        erro = e.message
-                    )
+                    _state.value = _state.value.copy(isLoading = false, erro = e.message)
                 }
+        }
+    }
+
+    fun updateTheme(mode: AppThemeMode) {
+        viewModelScope.launch {
+            val user = _state.value.usuario ?: return@launch
+            repository.updateTheme(user.id, mode)
+            _state.value = _state.value.copy(usuario = user.copy(themeMode = mode))
+        }
+    }
+
+    fun updateCurrency(currency: CurrencyPreference) {
+        viewModelScope.launch {
+            val user = _state.value.usuario ?: return@launch
+            repository.updateCurrency(user.id, currency)
+            _state.value = _state.value.copy(usuario = user.copy(currency = currency))
         }
     }
 

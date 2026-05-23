@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.payflow.app.domain.model.User
+import com.payflow.app.ui.preferences.AppThemeMode
+import com.payflow.app.ui.preferences.CurrencyPreference
 
 @Dao
 interface UserDao {
@@ -16,4 +18,10 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :userId")
     suspend fun buscarPorId(userId: String): User?
+
+    @Query("UPDATE users SET themeMode = :mode WHERE id = :userId")
+    suspend fun updateTheme(userId: String, mode: AppThemeMode)
+
+    @Query("UPDATE users SET currency = :currency WHERE id = :userId")
+    suspend fun updateCurrency(userId: String, currency: CurrencyPreference)
 }

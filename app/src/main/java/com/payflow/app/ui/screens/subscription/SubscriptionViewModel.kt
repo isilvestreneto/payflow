@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.local.repository.UserRepository
 import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.domain.model.PaymentMethod
 import com.payflow.app.domain.model.SubscriptionStatus
@@ -19,8 +18,7 @@ import kotlin.math.roundToLong
 
 class SubscriptionViewModel(
     private val subscriptionRepository: SubscriptionRepository,
-    private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     var editingId by mutableStateOf<String?>(null)
@@ -64,13 +62,10 @@ class SubscriptionViewModel(
 
         viewModelScope.launch {
             val user = authRepository.usuarioLogado()
-            val usuarioLogadoId = user?.id ?: run {
-                userRepository.ensureDefaultUser()
-                "user_default"
-            }
-            
+            val usuarioLogadoId = user?.id ?: return@launch
+
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-            
+
             val entity = if (editingId == null) {
                 SubscriptionEntity(
                     nome = nomeServico,
@@ -103,7 +98,7 @@ class SubscriptionViewModel(
             } else {
                 subscriptionRepository.updateSubscription(entity)
             }
-            
+
             resetForm()
             onSuccess()
         }
