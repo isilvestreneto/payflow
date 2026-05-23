@@ -23,19 +23,15 @@ import com.payflow.app.ui.screens.login.LoginScreen
 import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.ui.screens.settings.SettingsScreen
 import com.payflow.app.viewmodel.AuthViewModel
-import com.payflow.app.ui.screens.history.HistoryScreen
-import com.payflow.app.ui.screens.history.HistoryViewModel
 import com.payflow.app.ui.screens.historydetails.HistoryDetails
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 import com.payflow.ui.screens.history.HistoryScreen
 import com.payflow.ui.screens.history.HistoryViewModel
-import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 
 @Composable
 fun PayFlowNavGraph(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
-    getSubscriptionsUseCase: GetSubscriptionsUseCase,
     authViewModel: AuthViewModel,
     getSubscriptionsUseCase: GetSubscriptionsUseCase
 ) {
