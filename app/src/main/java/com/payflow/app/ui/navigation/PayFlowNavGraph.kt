@@ -14,7 +14,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryViewModelFactory
+import com.payflow.app.ui.screens.history.HistoryViewModelFactory
 import com.payflow.app.ui.screens.home.HomeScreen
+import com.payflow.app.ui.screens.home.HomeUiState
 import com.payflow.app.ui.screens.home.HomeUiState
 import com.payflow.app.ui.screens.home.HomeViewModel
 import com.payflow.app.ui.screens.login.LoginScreen
@@ -25,13 +27,17 @@ import com.payflow.app.ui.screens.history.HistoryScreen
 import com.payflow.app.ui.screens.history.HistoryViewModel
 import com.payflow.app.ui.screens.historydetails.HistoryDetails
 import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
+import com.payflow.ui.screens.history.HistoryScreen
+import com.payflow.ui.screens.history.HistoryViewModel
+import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 
 @Composable
 fun PayFlowNavGraph(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     getSubscriptionsUseCase: GetSubscriptionsUseCase,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    getSubscriptionsUseCase: GetSubscriptionsUseCase
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

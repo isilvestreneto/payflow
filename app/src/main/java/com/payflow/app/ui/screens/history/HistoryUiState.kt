@@ -1,4 +1,4 @@
-package com.payflow.app.ui.screens.history
+package com.payflow.ui.screens.history
 
 import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
