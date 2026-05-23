@@ -69,7 +69,8 @@ fun PayFlowApp(modifier: Modifier = Modifier) {
     PayFlowNavGraph(
         navController = navController,
         homeViewModel = homeViewModel,
-        authViewModel = authViewModel
+        authViewModel = authViewModel,
+        getSubscriptionsUseCase = GetSubscriptionsUseCase()
     )
 }
 

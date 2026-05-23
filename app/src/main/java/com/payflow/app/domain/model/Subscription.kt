@@ -1,5 +1,6 @@
 package com.payflow.app.domain.model
 
+import java.time.LocalDate
 import java.util.Date
 
 data class Subscription(
@@ -9,13 +10,13 @@ data class Subscription(
     val status: SubscriptionStatus,
     val type: SubscriptionType,
     val paymentMethod: PaymentMethod,
-    val startDate: Date,
+    val startDate: LocalDate,
     val billingDate: Int, // Dia do mês (1-31)
     val lastUseDate: Date? = null,
     val useCount: Int = 0, // Quantas vezes usou no mês
     val notes: String? = null,
     val iconResId: Int? = null, // ID do recurso drawable do ícone
     val iconUri: String? = null, // URI para ícone customizado/upload
-    val createdAt: Date = Date(),
-    val updatedAt: Date = Date()
+    val createdAt: LocalDate = LocalDate.now(),
+    val updatedAt: LocalDate = LocalDate.now()
 )
