@@ -13,23 +13,23 @@ import com.payflow.app.domain.model.TipoLogin
 import com.payflow.app.domain.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 class AuthRepository(
     private val userDao: UserDao,
     private val credentialManager: CredentialManager,
     private val preferencias: SharedPreferences
 ) {
-    // Login com email/senha (fake, valida no Room)
+    // Login com email/senha (valida hash no Room)
     suspend fun loginComEmail(email: String, senha: String): Result<User> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.e("AuthRepository", "Buscando usuário: $email / $senha")
-                val user = userDao.buscarPorEmailESenha(email, senha)
+                val senhaHash = hashSenha(senha)
+                val user = userDao.buscarPorEmailESenha(email, senhaHash)
                 if (user != null) {
-                    Log.e("AuthRepository", "Usuário encontrado: ${user.nome}")
+                    salvarSessao(user.id)
                     Result.success(user)
                 } else {
-                    Log.e("AuthRepository", "Usuário NÃO encontrado")
                     Result.failure(Exception("Email ou senha incorretos"))
                 }
             } catch (e: Exception) {
@@ -59,7 +59,6 @@ class AuthRepository(
                         if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                             val googleCred = GoogleIdTokenCredential.createFrom(credential.data)
 
-                            // Cria ou atualiza user no banco local
                             val user = User(
                                 id = googleCred.id,
                                 nome = googleCred.displayName ?: "",
@@ -68,6 +67,7 @@ class AuthRepository(
                                 senha = ""
                             )
                             userDao.inserir(user)
+                            salvarSessao(user.id)
 
                             Result.success(user)
                         } else {
@@ -84,18 +84,25 @@ class AuthRepository(
         }
     }
 
-    // Cadastro local (email/senha)
+    // Cadastro local (email/senha) — salva hash, persiste sessão
     suspend fun cadastrar(nome: String, email: String, senha: String): Result<User> {
         return withContext(Dispatchers.IO) {
             try {
+                // Verifica se email já existe
+                val existente = userDao.buscarPorId(email)
+                if (existente != null) {
+                    return@withContext Result.failure(Exception("Email já cadastrado"))
+                }
+
                 val user = User(
                     id = email,
                     nome = nome,
                     email = email,
                     tipoLogin = TipoLogin.EMAIL,
-                    senha = senha
+                    senha = hashSenha(senha)
                 )
                 userDao.inserir(user)
+                salvarSessao(user.id)
                 Result.success(user)
             } catch (e: Exception) {
                 Log.e("AuthRepository", "Erro cadastro: ${e.message}", e)
@@ -106,10 +113,9 @@ class AuthRepository(
 
     suspend fun usuarioLogado(): User? {
         val userId = preferencias.getString("userId", null) ?: return null
-        return userDao.buscarPorId(userId)
+        return withContext(Dispatchers.IO) { userDao.buscarPorId(userId) }
     }
 
-    // nos logins bem-sucedidos, salva o ID:
     private fun salvarSessao(userId: String) {
         preferencias.edit().putString("userId", userId).apply()
     }
@@ -118,33 +124,30 @@ class AuthRepository(
         preferencias.edit().remove("userId").apply()
     }
 
+    // SHA-256 — não é bcrypt, mas é o mínimo aceitável pra não salvar texto puro
+    private fun hashSenha(senha: String): String {
+        val bytes = MessageDigest.getInstance("SHA-256").digest(senha.toByteArray())
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+
     // Criar usuário de teste para desenvolvimento
     suspend fun criarUsuarioTeste() {
         withContext(Dispatchers.IO) {
             try {
-                Log.e("AuthRepository", "========================================")
-                Log.e("AuthRepository", "CRIANDO USUÁRIO DE TESTE")
-                // Verificar se já existe
                 val existente = userDao.buscarPorId("teste@payflow.com")
-                if (existente != null) {
-                    Log.e("AuthRepository", "✓ Usuário de teste JÁ EXISTE: teste@payflow.com / 123456")
-                    Log.e("AuthRepository", "========================================")
-                    return@withContext
-                }
-                
+                if (existente != null) return@withContext
+
                 val user = User(
                     id = "teste@payflow.com",
                     nome = "Usuário Teste",
                     email = "teste@payflow.com",
                     tipoLogin = TipoLogin.EMAIL,
-                    senha = "123456"
+                    senha = hashSenha("123456")
                 )
                 userDao.inserir(user)
-                Log.e("AuthRepository", "✓ Usuário de teste CRIADO COM SUCESSO: teste@payflow.com / 123456")
-                Log.e("AuthRepository", "========================================")
+                Log.d("AuthRepository", "Usuário de teste criado: teste@payflow.com / 123456")
             } catch (e: Exception) {
-                Log.e("AuthRepository", "✗ ERRO FATAL ao criar usuário de teste: ${e.message}", e)
-                Log.e("AuthRepository", "========================================")
+                Log.e("AuthRepository", "Erro ao criar usuário de teste: ${e.message}", e)
             }
         }
     }

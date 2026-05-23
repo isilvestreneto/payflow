@@ -18,58 +18,80 @@ class AuthViewModel(
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
     init {
-        Log.e("AuthViewModel", "========================================")
-        Log.e("AuthViewModel", "INIT - Criando usuário de teste")
-        Log.e("AuthViewModel", "========================================")
         viewModelScope.launch {
-            // Criar usuário de teste (dev only)
             repository.criarUsuarioTeste()
-            
+
             val user = repository.usuarioLogado()
             if (user != null) {
-                Log.e("AuthViewModel", "Usuário já logado: ${user.email}")
                 _state.value = AuthUiState(usuario = user)
-            } else {
-                Log.e("AuthViewModel", "Nenhum usuário logado")
             }
         }
     }
 
-    fun loginComGoogle(context: Context) {
+    fun cadastrar(nome: String, email: String, senha: String) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
-            repository.loginComGoogle(context)
+            _state.value = _state.value.copy(isLoading = true, erro = null)
+            repository.cadastrar(nome, email, senha)
                 .onSuccess { user ->
                     _state.value = AuthUiState(usuario = user)
                 }
                 .onFailure { e ->
-                    _state.value = AuthUiState(erro = e.message)
+                    Log.e("AuthViewModel", "Cadastro falhou: ${e.message}")
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        erro = e.message
+                    )
                 }
         }
     }
 
     fun loginComEmail(email: String, senha: String) {
-        Log.e("AuthViewModel", "========================================")
-        Log.e("AuthViewModel", "LOGIN EMAIL: $email")
-        Log.e("AuthViewModel", "========================================")
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.value = _state.value.copy(isLoading = true, erro = null)
             repository.loginComEmail(email, senha)
                 .onSuccess { user ->
-                    Log.e("AuthViewModel", "LOGIN SUCESSO: ${user.email}")
                     _state.value = AuthUiState(usuario = user)
                 }
                 .onFailure { e ->
-                    Log.e("AuthViewModel", "LOGIN FALHOU: ${e.message}")
-                    _state.value = AuthUiState(erro = e.message)
+                    Log.e("AuthViewModel", "Login falhou: ${e.message}")
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        erro = e.message
+                    )
                 }
         }
+    }
+
+    fun loginComGoogle(context: Context) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, erro = null)
+            repository.loginComGoogle(context)
+                .onSuccess { user ->
+                    _state.value = AuthUiState(usuario = user)
+                }
+                .onFailure { e ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        erro = e.message
+                    )
+                }
+        }
+    }
+
+    fun mostrarCadastro() {
+        _state.value = _state.value.copy(mostrarCadastro = true, erro = null)
+    }
+
+    fun fecharCadastro() {
+        _state.value = _state.value.copy(mostrarCadastro = false, erro = null)
+    }
+
+    fun limparErro() {
+        _state.value = _state.value.copy(erro = null)
     }
 
     fun logout() {
         repository.logout()
         _state.value = AuthUiState()
     }
-
-
 }
