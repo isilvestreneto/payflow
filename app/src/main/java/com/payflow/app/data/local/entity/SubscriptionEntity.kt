@@ -35,5 +35,8 @@ data class SubscriptionEntity(
     val usuarioId: String,
 
     val dataCriacao: String,
-    val dataAtualizacao: String
+    val dataAtualizacao: String,
+
+    val useCount: Int = 0,
+    val lastResetDate: String = ""
 )
