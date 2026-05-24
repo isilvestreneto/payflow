@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import kotlin.collections.sortedBy
-import kotlin.collections.sortedByDescending
 
 class HistoryViewModel(
-    private val getSubscriptionsUseCase: GetSubscriptionsUseCase
+    private val getSubscriptionsUseCase: GetSubscriptionsUseCase,
+    private val userId: String
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HistoryUiState>(HistoryUiState.Loading)
@@ -35,7 +34,7 @@ class HistoryViewModel(
             try {
                 _uiState.value = HistoryUiState.Loading
 
-                getSubscriptionsUseCase().collect { subscriptions ->
+                getSubscriptionsUseCase(userId).collect { subscriptions ->
                     allSubscriptions = subscriptions
 
                     if (subscriptions.isEmpty()) {
@@ -69,12 +68,10 @@ class HistoryViewModel(
     private fun applyFiltersAndSort() {
         var filtered = allSubscriptions
 
-        // Aplicar filtro de status
         if (currentStatusFilter != null) {
             filtered = filtered.filter { it.status == currentStatusFilter }
         }
 
-        // Aplicar filtro de período
         if (currentStartDate != null || currentEndDate != null) {
             filtered = filtered.filter { subscription ->
                 val inRange = when {
@@ -82,19 +79,14 @@ class HistoryViewModel(
                         subscription.startDate.isAfter(currentStartDate) &&
                                 subscription.startDate.isBefore(currentEndDate)
                     }
-                    currentStartDate != null -> {
-                        subscription.startDate.isAfter(currentStartDate)
-                    }
-                    currentEndDate != null -> {
-                        subscription.startDate.isBefore(currentEndDate)
-                    }
+                    currentStartDate != null -> subscription.startDate.isAfter(currentStartDate)
+                    currentEndDate != null -> subscription.startDate.isBefore(currentEndDate)
                     else -> true
                 }
                 inRange
             }
         }
 
-        // Aplicar ordenação
         val sorted = when (currentSortOption) {
             SortOption.DATE -> filtered.sortedByDescending { it.startDate }
             SortOption.NAME -> filtered.sortedBy { it.name }

@@ -42,6 +42,7 @@ fun PayFlowNavGraph(
     homeViewModel: HomeViewModel,
     authViewModel: AuthViewModel,
     getSubscriptionsUseCase: GetSubscriptionsUseCase,
+    userId: String,
     currentThemeMode: AppThemeMode,
     onThemeModeChange: (AppThemeMode) -> Unit,
     currentCurrency: CurrencyPreference,
@@ -118,8 +119,9 @@ fun PayFlowNavGraph(
                 )
             }
 
+            // History
             composable(route = BottomNavItem.History.route) {
-                val factory = HistoryViewModelFactory(getSubscriptionsUseCase)
+                val factory = HistoryViewModelFactory(getSubscriptionsUseCase, userId)
                 val historyViewModel: HistoryViewModel = viewModel(factory = factory)
                 HistoryScreen(
                     onNavigateToDetail = { subscriptionId ->
@@ -224,10 +226,9 @@ fun PayFlowNavGraph(
                 route = Screen.HistoryDetails.route,
                 arguments = listOf(navArgument("subscriptionId") { type = NavType.StringType })
             ) {
-                val subscriptions by getSubscriptionsUseCase().collectAsState(initial = emptyList())
+                val subscriptions by getSubscriptionsUseCase(userId).collectAsState(initial = emptyList())
                 val subscriptionId = it.arguments?.getString("subscriptionId")
-                val subscription =
-                    subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
+                val subscription = subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
 
                 if (subscription != null) {
                     HistoryDetails(
