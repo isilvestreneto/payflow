@@ -9,10 +9,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,15 +23,28 @@ import androidx.compose.ui.unit.dp
 import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
 import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryDetails(
     subscription: Subscription,
     onBackClick: () -> Unit,
+    onUseClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    var useCount by remember(subscription.useCount) { mutableIntStateOf(subscription.useCount) }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = 80.dp)
+            )
+        },
         topBar = {
             TopAppBar(
                 title = { Text("Detalhes da Assinatura") },
@@ -57,17 +72,45 @@ fun HistoryDetails(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            HeaderCard(subscription = subscription)
+            HeaderCard(subscription = subscription, useCount = useCount)
             DetailCard(subscription = subscription)
             if (!subscription.notes.isNullOrBlank()) {
                 NotesCard(notes = subscription.notes)
+            }
+
+            Button(
+                onClick = {
+                    useCount++
+                    onUseClick(subscription.id)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Uso registrado! Total: ${useCount}x este mês",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Usei hoje")
             }
         }
     }
 }
 
 @Composable
-private fun HeaderCard(subscription: Subscription) {
+private fun HeaderCard(
+    subscription: Subscription,
+    useCount: Int
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -99,6 +142,23 @@ private fun HeaderCard(subscription: Subscription) {
             )
             Spacer(modifier = Modifier.height(12.dp))
             StatusBadge(status = subscription.status)
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Loop,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = "Usado $useCount vez${if (useCount != 1) "es" else ""} este mês",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+            }
         }
     }
 }

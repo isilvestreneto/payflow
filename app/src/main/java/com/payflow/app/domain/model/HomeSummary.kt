@@ -6,5 +6,6 @@ data class HomeSummary(
     val averageValue: Double,
     val mostExpensive: Subscription?,
     val cheapest: Subscription?,
-    val mostUsed: Subscription?
+    val mostUsed: Subscription?,
+    val leastUsed: List<Subscription> = emptyList()
 )

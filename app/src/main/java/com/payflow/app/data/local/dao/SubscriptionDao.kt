@@ -24,4 +24,10 @@ interface SubscriptionDao {
 
     @Query("SELECT * FROM subscriptions WHERE usuario_id = :userId ORDER BY dataCobrancaMillis ASC")
     fun getSubscriptionsByUserId(userId: String): Flow<List<SubscriptionEntity>>
+
+    @Query("UPDATE subscriptions SET useCount = useCount + 1, dataAtualizacao = :timestamp WHERE id = :id")
+    suspend fun incrementUseCount(id: String, timestamp: String)
+
+    @Query("UPDATE subscriptions SET useCount = 0, lastResetDate = :resetDate WHERE usuario_id = :userId")
+    suspend fun resetMonthlyUseCount(userId: String, resetDate: String)
 }

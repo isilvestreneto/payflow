@@ -16,23 +16,25 @@ class GetHomeSummaryUseCase(
     }
 
     private fun calculateSummary(subscriptions: List<Subscription>): HomeSummary {
-        val activeSubscriptions = subscriptions.filter { it.status == SubscriptionStatus.ACTIVE }
-
-        val activeCount = activeSubscriptions.size
-        val monthlySpending = activeSubscriptions.sumOf { it.value }
+        val active = subscriptions.filter { it.status == SubscriptionStatus.ACTIVE }
+        val activeCount = active.size
+        val monthlySpending = active.sumOf { it.value }
         val averageValue = if (activeCount > 0) monthlySpending / activeCount else 0.0
 
-        val mostExpensive = activeSubscriptions.maxByOrNull { it.value }
-        val cheapest = activeSubscriptions.minByOrNull { it.value }
-        val mostUsed = activeSubscriptions.maxByOrNull { it.useCount }
+        // Pouco usadas = ativas com menos de 2 usos no mês, ordenadas por uso crescente
+        val leastUsed = active
+            .filter { it.useCount < 2 }
+            .sortedBy { it.useCount }
+            .take(3)
 
         return HomeSummary(
             activeSubscriptionsCount = activeCount,
             monthlySpending = monthlySpending,
             averageValue = averageValue,
-            mostExpensive = mostExpensive,
-            cheapest = cheapest,
-            mostUsed = mostUsed
+            mostExpensive = active.maxByOrNull { it.value },
+            cheapest = active.minByOrNull { it.value },
+            mostUsed = active.maxByOrNull { it.useCount },
+            leastUsed = leastUsed
         )
     }
 }

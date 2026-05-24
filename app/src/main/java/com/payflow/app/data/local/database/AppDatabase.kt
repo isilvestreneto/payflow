@@ -12,7 +12,11 @@ import com.payflow.app.data.repository.UserDao
 import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.domain.model.User
 
-@Database(entities = [SubscriptionEntity::class, User::class], version = 17, exportSchema = false)
+@Database(
+    entities = [SubscriptionEntity::class, User::class],
+    version = 18,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -23,91 +27,10 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        private val MIGRATION_11_12 = object : Migration(11, 12) {
+        private val MIGRATION_17_18 = object : Migration(17, 18) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `nome` TEXT NOT NULL, `email` TEXT NOT NULL, `tipoLogin` TEXT NOT NULL, `senha` TEXT, PRIMARY KEY(`id`))")
-
-                db.execSQL("""
-                    CREATE TABLE IF NOT EXISTS `subscriptions` (
-                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-                        `nome` TEXT NOT NULL, 
-                        `valorCentavos` INTEGER NOT NULL, 
-                        `status` INTEGER NOT NULL, 
-                        `dataCobrancaMillis` INTEGER NOT NULL, 
-                        `formaPagamento` TEXT NOT NULL, 
-                        `categoria` TEXT NOT NULL, 
-                        `usuario_id` TEXT NOT NULL, 
-                        `dataCriacao` TEXT NOT NULL, 
-                        `dataAtualizacao` TEXT NOT NULL, 
-                        FOREIGN KEY(`usuario_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-                    )
-                """.trimIndent())
-
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_subscriptions_usuario_id` ON `subscriptions` (`usuario_id`)")
-            }
-        }
-
-        private val MIGRATION_12_13 = object : Migration(12, 13) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE `subscriptions` RENAME TO `subscriptions_old`")
-
-                db.execSQL("""
-                    CREATE TABLE `subscriptions` (
-                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-                        `nome` TEXT NOT NULL, 
-                        `valorCentavos` INTEGER NOT NULL, 
-                        `status` TEXT NOT NULL, 
-                        `dataCobrancaMillis` INTEGER NOT NULL, 
-                        `formaPagamento` TEXT NOT NULL, 
-                        `categoria` TEXT NOT NULL, 
-                        `usuario_id` TEXT NOT NULL, 
-                        `dataCriacao` TEXT NOT NULL, 
-                        `dataAtualizacao` TEXT NOT NULL, 
-                        FOREIGN KEY(`usuario_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-                    )
-                """.trimIndent())
-
-                db.execSQL("""
-                    INSERT INTO `subscriptions` (id, nome, valorCentavos, status, dataCobrancaMillis, formaPagamento, categoria, usuario_id, dataCriacao, dataAtualizacao)
-                    SELECT id, nome, valorCentavos, 
-                           CASE WHEN status = 1 THEN 'ACTIVE' ELSE 'PAUSED' END, 
-                           dataCobrancaMillis, formaPagamento, categoria, usuario_id, dataCriacao, dataAtualizacao 
-                    FROM `subscriptions_old`
-                """)
-
-                db.execSQL("DROP TABLE `subscriptions_old`")
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_subscriptions_usuario_id` ON `subscriptions` (`usuario_id`)")
-            }
-        }
-
-        private val MIGRATION_13_14 = object : Migration(13, 14) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE `subscriptions` RENAME TO `subscriptions_v13`")
-
-                db.execSQL("""
-                    CREATE TABLE `subscriptions` (
-                        `id` TEXT PRIMARY KEY NOT NULL, 
-                        `nome` TEXT NOT NULL, 
-                        `valorCentavos` INTEGER NOT NULL, 
-                        `status` TEXT NOT NULL, 
-                        `dataCobrancaMillis` INTEGER NOT NULL, 
-                        `formaPagamento` TEXT NOT NULL, 
-                        `categoria` TEXT NOT NULL, 
-                        `usuario_id` TEXT NOT NULL, 
-                        `dataCriacao` TEXT NOT NULL, 
-                        `dataAtualizacao` TEXT NOT NULL, 
-                        FOREIGN KEY(`usuario_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-                    )
-                """.trimIndent())
-
-                db.execSQL("""
-                    INSERT INTO `subscriptions` (id, nome, valorCentavos, status, dataCobrancaMillis, formaPagamento, categoria, usuario_id, dataCriacao, dataAtualizacao)
-                    SELECT CAST(id AS TEXT), nome, valorCentavos, status, dataCobrancaMillis, formaPagamento, categoria, usuario_id, dataCriacao, dataAtualizacao 
-                    FROM `subscriptions_v13`
-                """)
-
-                db.execSQL("DROP TABLE `subscriptions_v13`")
-                db.execSQL("CREATE INDEX IF NOT EXISTS `index_subscriptions_usuario_id` ON `subscriptions` (`usuario_id`)")
+                db.execSQL("ALTER TABLE subscriptions ADD COLUMN useCount INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE subscriptions ADD COLUMN lastResetDate TEXT NOT NULL DEFAULT ''")
             }
         }
 
@@ -118,8 +41,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .addMigrations(MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_17_18)
+                    .fallbackToDestructiveMigrationOnDowngrade()
                     .build()
                 INSTANCE = instance
                 instance

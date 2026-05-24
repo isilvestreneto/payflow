@@ -35,6 +35,8 @@ import com.payflow.app.ui.screens.subscription.SubscriptionViewModelFactory
 import com.payflow.ui.screens.history.HistoryScreen
 import com.payflow.ui.screens.history.HistoryViewModel
 import androidx.credentials.CredentialManager
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun PayFlowNavGraph(
@@ -226,14 +228,25 @@ fun PayFlowNavGraph(
                 route = Screen.HistoryDetails.route,
                 arguments = listOf(navArgument("subscriptionId") { type = NavType.StringType })
             ) {
+                val context = LocalContext.current
+                val database = remember { AppDatabase.getDatabase(context) }
+                val repository = remember { SubscriptionRepository(database.subscriptionDao()) }
+                val scope = rememberCoroutineScope()
+
                 val subscriptions by getSubscriptionsUseCase(userId).collectAsState(initial = emptyList())
                 val subscriptionId = it.arguments?.getString("subscriptionId")
-                val subscription = subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
+                val subscription =
+                    subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
 
                 if (subscription != null) {
                     HistoryDetails(
                         subscription = subscription,
-                        onBackClick = { navController.popBackStack() }
+                        onBackClick = { navController.popBackStack() },
+                        onUseClick = { id ->
+                            scope.launch {
+                                repository.incrementUseCount(id)
+                            }
+                        }
                     )
                 }
             }

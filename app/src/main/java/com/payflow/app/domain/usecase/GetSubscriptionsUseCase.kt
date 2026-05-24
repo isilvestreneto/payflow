@@ -25,7 +25,7 @@ class GetSubscriptionsUseCase(
                     type = SubscriptionType.entries.find { it.displayName == entity.categoria } ?: SubscriptionType.OUTROS,
                     paymentMethod = PaymentMethod.entries.find { it.displayName == entity.formaPagamento } ?: PaymentMethod.CREDIT_CARD,
                     billingDate = extractDayFromMillis(entity.dataCobrancaMillis),
-                    useCount = 0,
+                    useCount = entity.useCount,
                     createdAt = parseDate(entity.dataCriacao),
                     updatedAt = parseDate(entity.dataAtualizacao),
                     startDate = parseDate(entity.dataCriacao)
@@ -37,18 +37,13 @@ class GetSubscriptionsUseCase(
     private fun parseDate(dateStr: String): LocalDate {
         if (dateStr.isBlank()) return LocalDate.now()
         return try {
-            LocalDate.parse(
-                dateStr,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            )
+            LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         } catch (e: Exception) {
             LocalDate.now()
         }
     }
 
     private fun extractDayFromMillis(millis: Long): Int {
-        return Instant.ofEpochMilli(millis)
-            .atZone(ZoneId.systemDefault())
-            .dayOfMonth
+        return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).dayOfMonth
     }
 }
