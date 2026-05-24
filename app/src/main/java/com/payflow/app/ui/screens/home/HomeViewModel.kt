@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-// @HiltViewModel - adicionar quando configurar Hilt
 class HomeViewModel(
-    private val getHomeSummaryUseCase: GetHomeSummaryUseCase
+    private val getHomeSummaryUseCase: GetHomeSummaryUseCase,
+    private val userId: String
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -24,8 +24,8 @@ class HomeViewModel(
     fun loadHomeSummary() {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
-            
-            getHomeSummaryUseCase()
+
+            getHomeSummaryUseCase(userId)
                 .catch { exception ->
                     _uiState.value = HomeUiState.Error(
                         exception.message ?: "Erro ao carregar dados"

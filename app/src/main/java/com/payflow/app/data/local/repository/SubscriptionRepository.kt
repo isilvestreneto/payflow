@@ -17,4 +17,8 @@ class SubscriptionRepository(private val subscriptionDao: SubscriptionDao) {
     fun getAllSubscriptions(): Flow<List<SubscriptionEntity>> {
         return subscriptionDao.getAllSubscriptions()
     }
+
+    fun getSubscriptionsByUserId(userId: String): Flow<List<SubscriptionEntity>> {
+        return subscriptionDao.getSubscriptionsByUserId(userId)
+    }
 }

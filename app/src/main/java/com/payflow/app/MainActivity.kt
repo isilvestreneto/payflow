@@ -57,6 +57,7 @@ fun PayFlowApp() {
     )
 
     val authState by authViewModel.state.collectAsState()
+    val userId = authState.usuario?.id ?: ""
     val currentThemeMode = authState.usuario?.themeMode ?: AppThemeMode.SYSTEM
     val currentCurrency = authState.usuario?.currency ?: CurrencyPreference.BRL
     var profilePhotoUri by remember { mutableStateOf<String?>(null) }
@@ -65,7 +66,8 @@ fun PayFlowApp() {
         factory = HomeViewModelFactory(
             getHomeSummaryUseCase = GetHomeSummaryUseCase(
                 getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
-            )
+            ),
+            userId = userId
         )
     )
 
@@ -77,6 +79,7 @@ fun PayFlowApp() {
             homeViewModel = homeViewModel,
             authViewModel = authViewModel,
             getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository),
+            userId = userId,
             currentThemeMode = currentThemeMode,
             onThemeModeChange = { authViewModel.updateTheme(it) },
             currentCurrency = currentCurrency,

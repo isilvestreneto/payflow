@@ -14,8 +14,8 @@ import java.time.format.DateTimeFormatter
 class GetSubscriptionsUseCase(
     private val repository: SubscriptionRepository
 ) {
-    operator fun invoke(): Flow<List<Subscription>> {
-        return repository.getAllSubscriptions().map { entities ->
+    operator fun invoke(userId: String): Flow<List<Subscription>> {
+        return repository.getSubscriptionsByUserId(userId).map { entities ->
             entities.map { entity ->
                 Subscription(
                     id = entity.id,
