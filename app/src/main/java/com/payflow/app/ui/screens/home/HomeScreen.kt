@@ -30,6 +30,7 @@ import java.util.*
 fun HomeScreen(
     viewModel: HomeViewModel,
     user: User?,
+    profilePhotoUri: String?,
     onNavigateToProfile: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -86,6 +87,7 @@ fun HomeScreen(
                 HomeContent(
                     summary = state.summary,
                     user = user,
+                    profilePhotoUri = profilePhotoUri,
                     onNavigateToProfile = onNavigateToProfile,
                     onNavigateToDetail = onNavigateToDetail
                 )
@@ -98,6 +100,7 @@ fun HomeScreen(
 private fun HomeContent(
     summary: com.payflow.app.domain.model.HomeSummary,
     user: User?,
+    profilePhotoUri: String?,
     onNavigateToProfile: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -135,9 +138,10 @@ private fun HomeContent(
                         .clickable(onClick = onNavigateToProfile),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (user?.fotoUrl != null) {
+                    val photoUrl = profilePhotoUri ?: user?.fotoUrl
+                    if (photoUrl != null) {
                         AsyncImage(
-                            model = user.fotoUrl,
+                            model = photoUrl,
                             contentDescription = "Foto de perfil",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

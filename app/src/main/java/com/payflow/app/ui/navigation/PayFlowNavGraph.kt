@@ -130,6 +130,7 @@ fun PayFlowNavGraph(
                 HomeScreen(
                     viewModel = homeViewModel,
                     user = authState.usuario,
+                    profilePhotoUri = profilePhotoUri,
                     onNavigateToProfile = {
                         navController.navigate(BottomNavItem.Profile.route) {
                             popUpTo(BottomNavItem.Home.route) {
