@@ -1,8 +1,10 @@
 package com.payflow.app.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,17 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.payflow.app.domain.model.User
 import java.text.NumberFormat
+import java.time.LocalDate
 import java.util.*
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    user: User?,
+    profilePhotoUri: String?,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -73,7 +84,13 @@ fun HomeScreen(
             }
 
             is HomeUiState.Success -> {
-                HomeContent(summary = state.summary)
+                HomeContent(
+                    summary = state.summary,
+                    user = user,
+                    profilePhotoUri = profilePhotoUri,
+                    onNavigateToProfile = onNavigateToProfile,
+                    onNavigateToDetail = onNavigateToDetail
+                )
             }
         }
     }
@@ -82,6 +99,10 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     summary: com.payflow.app.domain.model.HomeSummary,
+    user: User?,
+    profilePhotoUri: String?,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currencyFormat = remember {
@@ -104,24 +125,37 @@ private fun HomeContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Olá, Ivanildo! 👋",
+                    text = "Olá, ${user?.nome?.split(" ")?.firstOrNull() ?: "Usuário"}! 👋",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                IconButton(
-                    onClick = { /* Navegar para perfil */ },
+                Box(
                     modifier = Modifier
                         .size(48.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                        .clickable(onClick = onNavigateToProfile),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Perfil",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(32.dp)
-                    )
+                    val photoUrl = profilePhotoUri ?: user?.fotoUrl
+                    if (photoUrl != null) {
+                        AsyncImage(
+                            model = photoUrl,
+                            contentDescription = "Foto de perfil",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
                 }
             }
         }
@@ -171,7 +205,7 @@ private fun HomeContent(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Câmbio USD-BRL: R$ 5,30 (Atualizado)",
+                            text = "${summary.activeSubscriptionsCount} assinaturas ativas",
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.7f)
                         )
@@ -186,11 +220,14 @@ private fun HomeContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Última Assinatura (Netflix - Vermelho)
+                // Última Assinatura (Mais Usada)
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .height(140.dp),
+                        .height(140.dp)
+                        .clickable(enabled = summary.mostUsed != null) {
+                            summary.mostUsed?.let { onNavigateToDetail(it.id) }
+                        },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFFE50914).copy(alpha = 0.15f)
                     ),
@@ -201,7 +238,7 @@ private fun HomeContent(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "Última\nAssinatura:",
+                            text = "Mais\nUsada:",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             lineHeight = 16.sp
@@ -209,14 +246,28 @@ private fun HomeContent(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = summary.mostUsed?.name ?: "Netflix",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (summary.mostUsed != null) {
+                            Text(
+                                text = summary.mostUsed.name,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "${summary.mostUsed.useCount} usos",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        } else {
+                            Text(
+                                text = "Nenhuma",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Icon(
                             imageVector = Icons.Default.Schedule,
@@ -227,11 +278,14 @@ private fun HomeContent(
                     }
                 }
 
-                // Próximo Pagamento (Amazon Prime - Azul)
+                // Próximo Pagamento
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .height(140.dp),
+                        .height(140.dp)
+                        .clickable(enabled = summary.nextDue != null) {
+                            summary.nextDue?.let { onNavigateToDetail(it.id) }
+                        },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF00A8E1).copy(alpha = 0.15f)
                     ),
@@ -250,15 +304,43 @@ private fun HomeContent(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = "Amazon Prime\n(Amanhã)",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            lineHeight = 18.sp
-                        )
+                        if (summary.nextDue != null) {
+                            val today = LocalDate.now()
+                            val currentDay = today.dayOfMonth
+                            val billingDay = summary.nextDue.billingDate
+                            val daysUntil = if (billingDay >= currentDay) {
+                                billingDay - currentDay
+                            } else {
+                                val daysInMonth = today.lengthOfMonth()
+                                (daysInMonth - currentDay) + billingDay
+                            }
+                            val dueText = when (daysUntil) {
+                                0 -> "Hoje"
+                                1 -> "Amanhã"
+                                else -> "$daysUntil dias"
+                            }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = summary.nextDue.name,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "($dueText)",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        } else {
+                            Text(
+                                text = "Nenhuma",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
@@ -277,11 +359,14 @@ private fun HomeContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Custo Mais Alto (Disney+ - Azul)
+                // Custo Mais Alto
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .height(140.dp),
+                        .height(140.dp)
+                        .clickable(enabled = summary.mostExpensive != null) {
+                            summary.mostExpensive?.let { onNavigateToDetail(it.id) }
+                        },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF113CCF).copy(alpha = 0.15f)
                     ),
@@ -300,18 +385,27 @@ private fun HomeContent(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = summary.mostExpensive?.name ?: "Disney+",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (summary.mostExpensive != null) {
+                            Text(
+                                text = summary.mostExpensive.name,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
 
-                        Text(
-                            text = summary.mostExpensive?.let { currencyFormat.format(it.value) } ?: "(R$ 109,90)",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
+                            Text(
+                                text = currencyFormat.format(summary.mostExpensive.value),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        } else {
+                            Text(
+                                text = "Nenhuma",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -324,11 +418,14 @@ private fun HomeContent(
                     }
                 }
 
-                // Menos Usado (Spotify - Verde)
+                // Menos Usado
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .height(140.dp),
+                        .height(140.dp)
+                        .clickable(enabled = summary.leastUsed.firstOrNull() != null) {
+                            summary.leastUsed.firstOrNull()?.let { onNavigateToDetail(it.id) }
+                        },
                     colors = CardDefaults.cardColors(
                         containerColor = Color(0xFF1DB954).copy(alpha = 0.15f)
                     ),
@@ -347,14 +444,29 @@ private fun HomeContent(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = summary.cheapest?.name ?: "Spotify",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        val leastUsedSub = summary.leastUsed.firstOrNull()
+                        if (leastUsedSub != null) {
+                            Text(
+                                text = leastUsedSub.name,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "${leastUsedSub.useCount} usos",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        } else {
+                            Text(
+                                text = "Nenhuma",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Icon(
                             imageVector = Icons.Default.MusicNote,
@@ -413,7 +525,8 @@ private fun HomeContent(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
+                                    .padding(bottom = 8.dp)
+                                    .clickable { onNavigateToDetail(subscription.id) },
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surface
                                 ),
