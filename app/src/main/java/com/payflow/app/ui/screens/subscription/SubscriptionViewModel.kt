@@ -9,9 +9,11 @@ import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.data.local.repository.SubscriptionRepository
 import com.payflow.app.data.repository.AuthRepository
 import com.payflow.app.domain.model.PaymentMethod
+import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.SubscriptionType
 import kotlinx.coroutines.launch
+import java.time.ZoneOffset
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToLong
@@ -44,6 +46,20 @@ class SubscriptionViewModel(
         } catch (_: Exception) {
             0L
         }
+    }
+
+    fun loadSubscription(subscription: Subscription) {
+        editingId = subscription.id
+        nomeServico = subscription.name
+        valorMensal = String.format("%.2f", subscription.value).replace(".", ",")
+        dataMillis = subscription.startDate
+            .atStartOfDay()
+            .toInstant(ZoneOffset.UTC)
+            .toEpochMilli()
+        formaPagamento = subscription.paymentMethod
+        categoria = subscription.type
+        ativo = subscription.status == SubscriptionStatus.ACTIVE
+        exibirDatePicker = false
     }
 
     fun resetForm() {

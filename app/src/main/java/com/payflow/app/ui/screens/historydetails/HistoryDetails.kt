@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material3.*
@@ -32,6 +33,7 @@ fun HistoryDetails(
     subscription: Subscription,
     onBackClick: () -> Unit,
     onUseClick: (String) -> Unit,
+    onEditClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -60,7 +62,16 @@ fun HistoryDetails(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar assinatura",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -72,7 +83,7 @@ fun HistoryDetails(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            HeaderCard(subscription = subscription, useCount = useCount)
+            DetailsCard(subscription = subscription, useCount = useCount)
             DetailCard(subscription = subscription)
             if (!subscription.notes.isNullOrBlank()) {
                 NotesCard(notes = subscription.notes)
@@ -107,7 +118,7 @@ fun HistoryDetails(
 }
 
 @Composable
-private fun HeaderCard(
+private fun DetailsCard(
     subscription: Subscription,
     useCount: Int
 ) {
