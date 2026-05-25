@@ -24,6 +24,8 @@ import com.payflow.app.ui.screens.history.HistoryViewModelFactory
 import com.payflow.app.ui.screens.home.HomeScreen
 import com.payflow.app.ui.screens.home.HomeUiState
 import com.payflow.app.ui.screens.home.HomeViewModel
+import com.payflow.app.ui.screens.home.HomeViewModelFactory
+import com.payflow.app.domain.usecase.GetHomeSummaryUseCase
 import com.payflow.app.ui.screens.login.LoginScreen
 import com.payflow.app.ui.screens.profile.ProfileScreen
 import com.payflow.app.viewmodel.AuthViewModel
@@ -41,9 +43,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PayFlowNavGraph(
     navController: NavHostController,
-    homeViewModel: HomeViewModel,
     authViewModel: AuthViewModel,
-    getSubscriptionsUseCase: GetSubscriptionsUseCase,
+    subscriptionRepository: SubscriptionRepository,
     userId: String,
     currentThemeMode: AppThemeMode,
     onThemeModeChange: (AppThemeMode) -> Unit,
@@ -116,14 +117,34 @@ fun PayFlowNavGraph(
 
             // Bottom Navigation Screens
             composable(BottomNavItem.Home.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 HomeScreen(
-                    viewModel = homeViewModel
+                    viewModel = homeViewModel,
+                    user = authState.usuario,
+                    onNavigateToProfile = {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(BottomNavItem.Home.route) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onNavigateToDetail = { subscriptionId ->
+                        navController.navigate(Screen.HistoryDetails.createRoute(subscriptionId))
+                    }
                 )
             }
 
             // History
             composable(route = BottomNavItem.History.route) {
-                val factory = HistoryViewModelFactory(getSubscriptionsUseCase, userId)
+                val factory = HistoryViewModelFactory(GetSubscriptionsUseCase(subscriptionRepository), userId)
                 val historyViewModel: HistoryViewModel = viewModel(factory = factory)
                 HistoryScreen(
                     onNavigateToDetail = { subscriptionId ->
@@ -153,6 +174,13 @@ fun PayFlowNavGraph(
 
             // Detail Screens
             composable(Screen.ActiveSubscriptions.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val count = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.activeSubscriptionsCount
@@ -165,6 +193,13 @@ fun PayFlowNavGraph(
             }
 
             composable(Screen.MonthlySpending.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val spending = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.monthlySpending
@@ -177,6 +212,13 @@ fun PayFlowNavGraph(
             }
 
             composable(Screen.AverageValue.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val average = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.averageValue
@@ -189,6 +231,13 @@ fun PayFlowNavGraph(
             }
 
             composable(Screen.MostExpensive.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.mostExpensive
@@ -201,6 +250,13 @@ fun PayFlowNavGraph(
             }
 
             composable(Screen.Cheapest.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.cheapest
@@ -213,6 +269,13 @@ fun PayFlowNavGraph(
             }
 
             composable(Screen.MostUsed.route) {
+                val factory = HomeViewModelFactory(
+                    getHomeSummaryUseCase = GetHomeSummaryUseCase(
+                        getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
+                    ),
+                    userId = userId
+                )
+                val homeViewModel: HomeViewModel = viewModel(factory = factory)
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.mostUsed
@@ -233,10 +296,9 @@ fun PayFlowNavGraph(
                 val repository = remember { SubscriptionRepository(database.subscriptionDao()) }
                 val scope = rememberCoroutineScope()
 
-                val subscriptions by getSubscriptionsUseCase(userId).collectAsState(initial = emptyList())
+                val subscriptions by GetSubscriptionsUseCase(repository).invoke(userId).collectAsState(initial = emptyList())
                 val subscriptionId = it.arguments?.getString("subscriptionId")
-                val subscription =
-                    subscriptions.firstOrNull { sub -> sub.id.toString() == subscriptionId }
+                val subscription = subscriptions.firstOrNull { sub -> sub.id == subscriptionId }
 
                 if (subscription != null) {
                     HistoryDetails(

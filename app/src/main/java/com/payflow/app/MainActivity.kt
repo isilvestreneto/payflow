@@ -18,13 +18,9 @@ import androidx.navigation.compose.rememberNavController
 import com.payflow.app.data.local.database.AppDatabase
 import com.payflow.app.data.local.repository.SubscriptionRepository
 import com.payflow.app.data.repository.AuthRepository
-import com.payflow.app.domain.usecase.GetHomeSummaryUseCase
-import com.payflow.app.domain.usecase.GetSubscriptionsUseCase
 import com.payflow.app.ui.navigation.PayFlowNavGraph
 import com.payflow.app.ui.preferences.AppThemeMode
 import com.payflow.app.ui.preferences.CurrencyPreference
-import com.payflow.app.ui.screens.home.HomeViewModel
-import com.payflow.app.ui.screens.home.HomeViewModelFactory
 import com.payflow.app.ui.theme.PayFlowTheme
 import com.payflow.app.viewmodel.AuthViewModel
 import com.payflow.app.viewmodel.AuthViewModelFactory
@@ -62,23 +58,13 @@ fun PayFlowApp() {
     val currentCurrency = authState.usuario?.currency ?: CurrencyPreference.BRL
     var profilePhotoUri by remember { mutableStateOf<String?>(null) }
 
-    val homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(
-            getHomeSummaryUseCase = GetHomeSummaryUseCase(
-                getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository)
-            ),
-            userId = userId
-        )
-    )
-
     val navController = rememberNavController()
 
     PayFlowTheme(themeMode = currentThemeMode) {
         PayFlowNavGraph(
             navController = navController,
-            homeViewModel = homeViewModel,
             authViewModel = authViewModel,
-            getSubscriptionsUseCase = GetSubscriptionsUseCase(subscriptionRepository),
+            subscriptionRepository = subscriptionRepository,
             userId = userId,
             currentThemeMode = currentThemeMode,
             onThemeModeChange = { authViewModel.updateTheme(it) },
