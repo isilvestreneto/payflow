@@ -123,7 +123,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "home_$userId",
+                    factory = factory
+                )
                 HomeScreen(
                     viewModel = homeViewModel,
                     user = authState.usuario,
@@ -145,7 +148,10 @@ fun PayFlowNavGraph(
             // History
             composable(route = BottomNavItem.History.route) {
                 val factory = HistoryViewModelFactory(GetSubscriptionsUseCase(subscriptionRepository), userId)
-                val historyViewModel: HistoryViewModel = viewModel(factory = factory)
+                val historyViewModel: HistoryViewModel = viewModel(
+                    key = "history_$userId",
+                    factory = factory
+                )
                 HistoryScreen(
                     onNavigateToDetail = { subscriptionId ->
                         navController.navigate(Screen.HistoryDetails.createRoute(subscriptionId))
@@ -180,7 +186,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "active_subs_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val count = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.activeSubscriptionsCount
@@ -199,7 +208,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "monthly_spending_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val spending = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.monthlySpending
@@ -218,7 +230,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "average_value_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val average = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.averageValue
@@ -237,7 +252,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "most_expensive_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.mostExpensive
@@ -256,7 +274,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "cheapest_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.cheapest
@@ -275,7 +296,10 @@ fun PayFlowNavGraph(
                     ),
                     userId = userId
                 )
-                val homeViewModel: HomeViewModel = viewModel(factory = factory)
+                val homeViewModel: HomeViewModel = viewModel(
+                    key = "most_used_$userId",
+                    factory = factory
+                )
                 val uiState by homeViewModel.uiState.collectAsState()
                 val subscription = if (uiState is HomeUiState.Success) {
                     (uiState as HomeUiState.Success).summary.mostUsed
@@ -330,7 +354,10 @@ fun PayFlowNavGraph(
                 }
 
                 val factory = remember { SubscriptionViewModelFactory(subscriptionRepo, authRepo) }
-                val subscriptionViewModel: SubscriptionViewModel = viewModel(factory = factory)
+                val subscriptionViewModel: SubscriptionViewModel = viewModel(
+                    key = "subscription_create_$userId",
+                    factory = factory
+                )
 
                 SubscriptionScreen(
                     viewModel = subscriptionViewModel,
