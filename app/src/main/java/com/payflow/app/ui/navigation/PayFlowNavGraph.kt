@@ -142,6 +142,9 @@ fun PayFlowNavGraph(
                     },
                     onNavigateToDetail = { subscriptionId ->
                         navController.navigate(Screen.HistoryDetails.createRoute(subscriptionId))
+                    },
+                    onNavigateToCreate = {
+                        navController.navigate(Screen.Create.route)
                     }
                 )
             }
