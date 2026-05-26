@@ -39,6 +39,7 @@ import com.payflow.ui.screens.history.HistoryViewModel
 import androidx.credentials.CredentialManager
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 
 @Composable
 fun PayFlowNavGraph(
@@ -389,7 +390,7 @@ fun PayFlowNavGraph(
                     )
                 }
 
-                val subscriptions by getSubscriptionsUseCase(userId).collectAsState(initial = emptyList())
+                val subscriptions by remember { GetSubscriptionsUseCase(subscriptionRepo) }(userId).collectAsState(initial = emptyList())
                 val subscriptionId = backStackEntry.arguments?.getString("subscriptionId")
                 val subscription = subscriptions.firstOrNull { it.id.toString() == subscriptionId }
 

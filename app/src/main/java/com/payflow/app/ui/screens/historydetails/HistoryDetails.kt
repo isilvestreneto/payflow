@@ -25,6 +25,7 @@ import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
 import java.time.format.DateTimeFormatter
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +38,6 @@ fun HistoryDetails(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var useCount by remember(subscription.useCount) { mutableIntStateOf(subscription.useCount) }
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -83,7 +83,7 @@ fun HistoryDetails(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            DetailsCard(subscription = subscription, useCount = useCount)
+            DetailsCard(subscription = subscription, useCount = subscription.useCount)
             DetailCard(subscription = subscription)
             if (!subscription.notes.isNullOrBlank()) {
                 NotesCard(notes = subscription.notes)
@@ -91,11 +91,10 @@ fun HistoryDetails(
 
             Button(
                 onClick = {
-                    useCount++
                     onUseClick(subscription.id)
                     scope.launch {
                         snackbarHostState.showSnackbar(
-                            message = "Uso registrado! Total: ${useCount}x este mês",
+                            message = "Uso registrado! Total: ${subscription.useCount + 1}x este mês",
                             duration = SnackbarDuration.Short
                         )
                     }
@@ -272,8 +271,7 @@ private fun DetailRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium
             )
             Text(
                 text = value,
@@ -304,4 +302,22 @@ private fun StatusBadge(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Active")
+@Composable
+private fun StatusBadgeActivePreview() {
+    StatusBadge(status = SubscriptionStatus.ACTIVE)
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Paused")
+@Composable
+private fun StatusBadgePausedPreview() {
+    StatusBadge(status = SubscriptionStatus.PAUSED)
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Canceled")
+@Composable
+private fun StatusBadgeCanceledPreview() {
+    StatusBadge(status = SubscriptionStatus.CANCELED)
 }
