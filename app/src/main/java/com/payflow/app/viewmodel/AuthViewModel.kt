@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.repository.AuthRepository
 import com.payflow.app.ui.preferences.AppThemeMode
 import com.payflow.app.ui.preferences.CurrencyPreference
 import kotlinx.coroutines.flow.MutableStateFlow

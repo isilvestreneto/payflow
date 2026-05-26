@@ -2,8 +2,7 @@ package com.payflow.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.payflow.app.data.repository.AuthRepository
-import com.payflow.app.ui.screens.home.HomeViewModel
+import com.payflow.app.data.local.repository.AuthRepository
 
 class AuthViewModelFactory(
     private val repository: AuthRepository

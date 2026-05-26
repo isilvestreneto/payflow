@@ -3,7 +3,7 @@ package com.payflow.app.ui.screens.subscription
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.repository.AuthRepository
 
 class SubscriptionViewModelFactory(
     private val subscriptionRepository: SubscriptionRepository,

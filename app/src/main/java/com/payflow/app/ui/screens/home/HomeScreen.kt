@@ -29,6 +29,7 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.payflow.app.domain.model.HomeSummary
 import com.payflow.app.domain.model.User
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -101,12 +102,15 @@ fun HomeScreen(
                         onNavigateToCreate = onNavigateToCreate
                     )
                 } else {
+                    val exchangeRate by viewModel.exchangeRate.collectAsState()
+
                     HomeContent(
                         summary = state.summary,
                         user = user,
                         profilePhotoUri = profilePhotoUri,
                         onNavigateToProfile = onNavigateToProfile,
-                        onNavigateToDetail = onNavigateToDetail
+                        onNavigateToDetail = onNavigateToDetail,
+                        exchangeRate = exchangeRate
                     )
                 }
             }
@@ -116,12 +120,13 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    summary: com.payflow.app.domain.model.HomeSummary,
+    summary: HomeSummary,
     user: User?,
     profilePhotoUri: String?,
     onNavigateToProfile: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    exchangeRate: Double?,
 ) {
     val currencyFormat = remember {
         NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
@@ -220,6 +225,14 @@ private fun HomeContent(
                             color = Color.White
                         )
 
+                        if (exchangeRate != null && exchangeRate > 0) {
+                            Text(
+                                text = "≈ US$ ${String.format("%.2f", summary.monthlySpending / exchangeRate)}",
+                                fontSize = 16.sp,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
@@ -227,6 +240,8 @@ private fun HomeContent(
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.7f)
                         )
+
+
                     }
                 }
             }

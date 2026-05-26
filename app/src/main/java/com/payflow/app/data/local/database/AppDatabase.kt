@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.payflow.app.data.local.dao.SubscriptionDao
-import com.payflow.app.data.repository.UserDao
+import com.payflow.app.data.local.repository.UserDao
 import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.domain.model.User
 

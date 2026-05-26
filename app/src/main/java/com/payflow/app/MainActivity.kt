@@ -17,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.payflow.app.data.local.database.AppDatabase
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.repository.AuthRepository
 import com.payflow.app.ui.navigation.PayFlowNavGraph
 import com.payflow.app.ui.preferences.AppThemeMode
 import com.payflow.app.ui.preferences.CurrencyPreference

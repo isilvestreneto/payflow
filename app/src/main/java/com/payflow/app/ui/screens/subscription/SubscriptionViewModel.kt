@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payflow.app.data.local.entity.SubscriptionEntity
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.repository.AuthRepository
 import com.payflow.app.domain.model.PaymentMethod
 import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus

@@ -92,28 +92,30 @@ fun HistoryDetails(
                 NotesCard(notes = subscription.notes)
             }
 
-            Button(
-                onClick = {
-                    onUseClick(subscription.id)
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Uso registrado! Total: ${subscription.useCount + 1}x este mês",
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Usei hoje")
+            if (subscription.status == SubscriptionStatus.ACTIVE) {
+                Button(
+                    onClick = {
+                        onUseClick(subscription.id)
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Uso registrado! Total: ${subscription.useCount + 1}x este mês",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Usei hoje")
+                }
             }
         }
     }
@@ -294,22 +296,22 @@ private fun StatusBadge(
         SubscriptionStatus.PAUSED -> Icons.Default.PauseCircle
         SubscriptionStatus.CANCELED -> Icons.Default.StopCircle
     }
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp),
-            )
-            Text(
-                text = status.displayName,
-                style = MaterialTheme.typography.labelLarge,
-            )
-        }
+    Row(
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = status.displayName,
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
 }
 
 @Preview(showBackground = true, name = "StatusBadge - Active")

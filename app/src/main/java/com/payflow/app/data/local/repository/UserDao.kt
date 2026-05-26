@@ -1,4 +1,4 @@
-package com.payflow.app.data.repository
+package com.payflow.app.data.local.repository
 
 import androidx.room.Dao
 import androidx.room.Insert

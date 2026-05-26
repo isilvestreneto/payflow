@@ -18,7 +18,7 @@ import com.payflow.app.ui.preferences.CurrencyPreference
 import androidx.navigation.navArgument
 import com.payflow.app.data.local.database.AppDatabase
 import com.payflow.app.data.local.repository.SubscriptionRepository
-import com.payflow.app.data.repository.AuthRepository
+import com.payflow.app.data.local.repository.AuthRepository
 import com.payflow.app.ui.screens.detail.*
 import com.payflow.app.ui.screens.history.HistoryViewModelFactory
 import com.payflow.app.ui.screens.home.HomeScreen
