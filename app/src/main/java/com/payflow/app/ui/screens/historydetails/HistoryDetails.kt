@@ -13,7 +13,10 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Loop
+import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material.icons.filled.StopCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -286,22 +289,27 @@ private fun StatusBadge(
     status: SubscriptionStatus,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        color = when (status) {
-            SubscriptionStatus.ACTIVE -> MaterialTheme.colorScheme.primary
-            SubscriptionStatus.PAUSED -> MaterialTheme.colorScheme.secondary
-            SubscriptionStatus.CANCELED -> MaterialTheme.colorScheme.error
-        }
-    ) {
-        Text(
-            text = status.displayName,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+    val icon = when (status) {
+        SubscriptionStatus.ACTIVE -> Icons.Default.CheckBox
+        SubscriptionStatus.PAUSED -> Icons.Default.PauseCircle
+        SubscriptionStatus.CANCELED -> Icons.Default.StopCircle
     }
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+            )
+            Text(
+                text = status.displayName,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
 }
 
 @Preview(showBackground = true, name = "StatusBadge - Active")
@@ -320,4 +328,27 @@ private fun StatusBadgePausedPreview() {
 @Composable
 private fun StatusBadgeCanceledPreview() {
     StatusBadge(status = SubscriptionStatus.CANCELED)
+}
+
+@Preview(showBackground = true, name = "HistoryDetails Preview", showSystemUi = true)
+@Composable
+private fun HistoryDetailsPreview() {
+    val subscription = Subscription(
+        id = "1",
+        name = "Netflix",
+        value = 39.90,
+        status = SubscriptionStatus.ACTIVE,
+        type = com.payflow.app.domain.model.SubscriptionType.STREAMING,
+        paymentMethod = com.payflow.app.domain.model.PaymentMethod.CREDIT_CARD,
+        billingDate = 15,
+        useCount = 3,
+        notes = "Plano família compartilhado com 4 pessoas.",
+        startDate = java.time.LocalDate.of(2023, 1, 15)
+    )
+    HistoryDetails(
+        subscription = subscription,
+        onBackClick = {},
+        onUseClick = {},
+        onEditClick = {}
+    )
 }
