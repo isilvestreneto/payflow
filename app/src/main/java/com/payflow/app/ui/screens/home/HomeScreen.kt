@@ -1,6 +1,7 @@
 package com.payflow.app.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.animation.core.*
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.roundToInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -33,6 +41,7 @@ fun HomeScreen(
     profilePhotoUri: String?,
     onNavigateToProfile: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
+    onNavigateToCreate: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -84,13 +93,22 @@ fun HomeScreen(
             }
 
             is HomeUiState.Success -> {
-                HomeContent(
-                    summary = state.summary,
-                    user = user,
-                    profilePhotoUri = profilePhotoUri,
-                    onNavigateToProfile = onNavigateToProfile,
-                    onNavigateToDetail = onNavigateToDetail
-                )
+                if (state.summary.activeSubscriptionsCount == 0) {
+                    HomeEmptyState(
+                        user = user,
+                        profilePhotoUri = profilePhotoUri,
+                        onNavigateToProfile = onNavigateToProfile,
+                        onNavigateToCreate = onNavigateToCreate
+                    )
+                } else {
+                    HomeContent(
+                        summary = state.summary,
+                        user = user,
+                        profilePhotoUri = profilePhotoUri,
+                        onNavigateToProfile = onNavigateToProfile,
+                        onNavigateToDetail = onNavigateToDetail
+                    )
+                }
             }
         }
     }
@@ -559,5 +577,324 @@ private fun HomeContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeEmptyState(
+    user: User?,
+    profilePhotoUri: String?,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToCreate: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp)
+    ) {
+        // Saudação no topo
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Olá, ${user?.nome?.split(" ")?.firstOrNull() ?: "Usuário"}! 👋",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    .clickable(onClick = onNavigateToProfile),
+                contentAlignment = Alignment.Center
+            ) {
+                val photoUrl = profilePhotoUri ?: user?.fotoUrl
+                if (photoUrl != null) {
+                    AsyncImage(
+                        model = photoUrl,
+                        contentDescription = "Foto de perfil",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Perfil",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Card com ilustração
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            ),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Ilustração com ícones
+                Box(
+                    modifier = Modifier
+                        .size(280.dp)
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Ícones flutuantes ao redor
+                    Box(
+                        modifier = Modifier
+                            .offset(x = (-60).dp, y = (-50).dp)
+                            .size(70.dp)
+                            .background(Color(0xFF6366F1), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Theaters,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 60.dp, y = (-40).dp)
+                            .size(65.dp)
+                            .background(Color(0xFF22D3EE), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudDownload,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .offset(x = (-70).dp, y = 45.dp)
+                            .size(68.dp)
+                            .background(Color(0xFF0891B2), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Headphones,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(38.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .offset(x = 65.dp, y = 50.dp)
+                            .size(72.dp)
+                            .background(Color(0xFFFF9800), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+
+                    // Botão + central
+                    Box(
+                        modifier = Modifier
+                            .size(90.dp)
+                            .background(Color.White, CircleShape)
+                            .border(4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Título
+                Text(
+                    text = "Gerencie Suas\nAssinaturas",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 34.sp
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Subtexto
+                Text(
+                    text = "Controle seus gastos e organize seus\nserviços em um só lugar.",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 20.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botão de ação
+        Button(
+            onClick = onNavigateToCreate,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "NOVA ASSINATURA +",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun AnimatedSubscriptionIcons() {
+    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(20000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
+
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    Box(
+        modifier = Modifier
+            .size(300.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Ícones ao redor
+        val subscriptionServices = listOf(
+            SubscriptionService("Netflix", Icons.Default.Movie, Color(0xFFE50914)),
+            SubscriptionService("Spotify", Icons.Default.MusicNote, Color(0xFF1DB954)),
+            SubscriptionService("YouTube", Icons.Default.PlayArrow, Color(0xFFFF0000)),
+      
+            SubscriptionService("HBO", Icons.Default.Tv, Color(0xFF8B5CF6))
+        )
+
+        subscriptionServices.forEachIndexed { index, service ->
+            val angle = (index * 60f + rotation) * (Math.PI / 180f).toFloat()
+            val radius = 110f
+            val offsetX = radius * cos(angle.toDouble()).toFloat()
+            val offsetY = radius * sin(angle.toDouble()).toFloat()
+
+            Icon(
+                imageVector = service.icon,
+                contentDescription = service.name,
+                tint = service.color,
+                modifier = Modifier
+                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                    .size(42.dp)
+                    .graphicsLayer {
+                        alpha = 0.95f
+                        rotationZ = -rotation
+                    }
+            )
+        }
+
+        // Botão + no centro
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .background(Color.White, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Adicionar",
+                tint = Color(0xFF6366F1),
+                modifier = Modifier.size(40.dp)
+            )
+        }
+    }
+}
+
+private data class SubscriptionService(
+    val name: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val color: Color
+)
+
+@Composable
+private fun SuggestionItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String
+) {
+    Row(
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
