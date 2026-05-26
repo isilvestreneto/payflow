@@ -13,6 +13,9 @@ sealed class Screen(val route: String) {
         fun createRoute(subscriptionId: String) = "history_details/$subscriptionId"
     }
     data object Create : Screen("create")
+    data object Edit : Screen("edit/{subscriptionId}") {
+        fun createRoute(subscriptionId: String) = "edit/$subscriptionId"
+    }
     data object Detail : Screen("detail") {
         fun createRoute(subscriptionId: String) {}
     }

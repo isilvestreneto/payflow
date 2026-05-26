@@ -39,6 +39,7 @@ import com.payflow.ui.screens.history.HistoryViewModel
 import androidx.credentials.CredentialManager
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 
 @Composable
 fun PayFlowNavGraph(
@@ -332,6 +333,9 @@ fun PayFlowNavGraph(
                     HistoryDetails(
                         subscription = subscription,
                         onBackClick = { navController.popBackStack() },
+                        onEditClick = {
+                            navController.navigate(Screen.Edit.createRoute(subscription.id))
+                        },
                         onUseClick = { id ->
                             scope.launch {
                                 repository.incrementUseCount(id)
@@ -369,6 +373,50 @@ fun PayFlowNavGraph(
                     onSaveSuccess = { navController.popBackStack() },
                     onNavigateBack = { navController.popBackStack() }
                 )
+            }
+
+            composable(
+                route = Screen.Edit.route,
+                arguments = listOf(navArgument("subscriptionId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val context = LocalContext.current
+                val database = remember { AppDatabase.getDatabase(context) }
+                val sharedPreferences =
+                    remember { context.getSharedPreferences("payflow_prefs", Context.MODE_PRIVATE) }
+                val subscriptionRepo =
+                    remember { SubscriptionRepository(database.subscriptionDao()) }
+                val authRepo = remember {
+                    AuthRepository(
+                        userDao = database.userDao(),
+                        credentialManager = CredentialManager.create(context),
+                        preferencias = sharedPreferences
+                    )
+                }
+
+                val subscriptions by remember { GetSubscriptionsUseCase(subscriptionRepo) }(userId).collectAsState(initial = emptyList())
+                val subscriptionId = backStackEntry.arguments?.getString("subscriptionId")
+                val subscription = subscriptions.firstOrNull { it.id.toString() == subscriptionId }
+
+                val factory = remember { SubscriptionViewModelFactory(subscriptionRepo, authRepo) }
+                val subscriptionViewModel: SubscriptionViewModel = viewModel(
+                    key = "edit_$subscriptionId",
+                    factory = factory
+                )
+
+                LaunchedEffect(subscription) {
+                    if (subscription != null && subscriptionViewModel.editingId == null) {
+                        subscriptionViewModel.loadSubscription(subscription)
+                    }
+                }
+
+                if (subscription != null) {
+                    SubscriptionScreen(
+                        viewModel = subscriptionViewModel,
+                        onBackClick = { navController.popBackStack() },
+                        onSaveSuccess = { navController.popBackStack() },
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }

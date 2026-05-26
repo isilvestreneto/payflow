@@ -11,8 +11,12 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Loop
+import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material.icons.filled.StopCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +28,7 @@ import com.payflow.app.domain.model.Subscription
 import com.payflow.app.domain.model.SubscriptionStatus
 import java.time.format.DateTimeFormatter
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,10 +37,10 @@ fun HistoryDetails(
     subscription: Subscription,
     onBackClick: () -> Unit,
     onUseClick: (String) -> Unit,
+    onEditClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var useCount by remember(subscription.useCount) { mutableIntStateOf(subscription.useCount) }
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -60,7 +65,16 @@ fun HistoryDetails(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar assinatura",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -72,7 +86,7 @@ fun HistoryDetails(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            HeaderCard(subscription = subscription, useCount = useCount)
+            DetailsCard(subscription = subscription, useCount = subscription.useCount)
             DetailCard(subscription = subscription)
             if (!subscription.notes.isNullOrBlank()) {
                 NotesCard(notes = subscription.notes)
@@ -80,11 +94,10 @@ fun HistoryDetails(
 
             Button(
                 onClick = {
-                    useCount++
                     onUseClick(subscription.id)
                     scope.launch {
                         snackbarHostState.showSnackbar(
-                            message = "Uso registrado! Total: ${useCount}x este mês",
+                            message = "Uso registrado! Total: ${subscription.useCount + 1}x este mês",
                             duration = SnackbarDuration.Short
                         )
                     }
@@ -107,7 +120,7 @@ fun HistoryDetails(
 }
 
 @Composable
-private fun HeaderCard(
+private fun DetailsCard(
     subscription: Subscription,
     useCount: Int
 ) {
@@ -261,8 +274,7 @@ private fun DetailRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium
             )
             Text(
                 text = value,
@@ -277,20 +289,66 @@ private fun StatusBadge(
     status: SubscriptionStatus,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        color = when (status) {
-            SubscriptionStatus.ACTIVE -> MaterialTheme.colorScheme.primary
-            SubscriptionStatus.PAUSED -> MaterialTheme.colorScheme.secondary
-            SubscriptionStatus.CANCELED -> MaterialTheme.colorScheme.error
-        }
-    ) {
-        Text(
-            text = status.displayName,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+    val icon = when (status) {
+        SubscriptionStatus.ACTIVE -> Icons.Default.CheckBox
+        SubscriptionStatus.PAUSED -> Icons.Default.PauseCircle
+        SubscriptionStatus.CANCELED -> Icons.Default.StopCircle
     }
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+            )
+            Text(
+                text = status.displayName,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Active")
+@Composable
+private fun StatusBadgeActivePreview() {
+    StatusBadge(status = SubscriptionStatus.ACTIVE)
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Paused")
+@Composable
+private fun StatusBadgePausedPreview() {
+    StatusBadge(status = SubscriptionStatus.PAUSED)
+}
+
+@Preview(showBackground = true, name = "StatusBadge - Canceled")
+@Composable
+private fun StatusBadgeCanceledPreview() {
+    StatusBadge(status = SubscriptionStatus.CANCELED)
+}
+
+@Preview(showBackground = true, name = "HistoryDetails Preview", showSystemUi = true)
+@Composable
+private fun HistoryDetailsPreview() {
+    val subscription = Subscription(
+        id = "1",
+        name = "Netflix",
+        value = 39.90,
+        status = SubscriptionStatus.ACTIVE,
+        type = com.payflow.app.domain.model.SubscriptionType.STREAMING,
+        paymentMethod = com.payflow.app.domain.model.PaymentMethod.CREDIT_CARD,
+        billingDate = 15,
+        useCount = 3,
+        notes = "Plano família compartilhado com 4 pessoas.",
+        startDate = java.time.LocalDate.of(2023, 1, 15)
+    )
+    HistoryDetails(
+        subscription = subscription,
+        onBackClick = {},
+        onUseClick = {},
+        onEditClick = {}
+    )
 }
