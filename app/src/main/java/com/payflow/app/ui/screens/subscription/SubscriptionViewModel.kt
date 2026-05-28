@@ -29,7 +29,7 @@ class SubscriptionViewModel(
     var dataMillis by mutableStateOf<Long?>(System.currentTimeMillis())
     var formaPagamento by mutableStateOf(PaymentMethod.CREDIT_CARD)
     var categoria by mutableStateOf(SubscriptionType.STREAMING)
-    var ativo by mutableStateOf(true)
+    var status by mutableStateOf(SubscriptionStatus.ACTIVE)
     var exibirDatePicker by mutableStateOf(false)
 
     val isFormValid: Boolean
@@ -58,7 +58,7 @@ class SubscriptionViewModel(
             .toEpochMilli()
         formaPagamento = subscription.paymentMethod
         categoria = subscription.type
-        ativo = subscription.status == SubscriptionStatus.ACTIVE
+        status = subscription.status
         exibirDatePicker = false
     }
 
@@ -69,7 +69,7 @@ class SubscriptionViewModel(
         dataMillis = System.currentTimeMillis()
         formaPagamento = PaymentMethod.CREDIT_CARD
         categoria = SubscriptionType.STREAMING
-        ativo = true
+        status = SubscriptionStatus.ACTIVE
         exibirDatePicker = false
     }
 
@@ -86,7 +86,7 @@ class SubscriptionViewModel(
                 SubscriptionEntity(
                     nome = nomeServico,
                     valorCentavos = parseMoedaParaCentavos(valorMensal),
-                    status = if (ativo) SubscriptionStatus.ACTIVE else SubscriptionStatus.PAUSED,
+                    status = status,
                     dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
                     formaPagamento = formaPagamento.displayName,
                     categoria = categoria.displayName,
@@ -99,7 +99,7 @@ class SubscriptionViewModel(
                     id = editingId!!,
                     nome = nomeServico,
                     valorCentavos = parseMoedaParaCentavos(valorMensal),
-                    status = if (ativo) SubscriptionStatus.ACTIVE else SubscriptionStatus.PAUSED,
+                    status = status,
                     dataCobrancaMillis = dataMillis ?: System.currentTimeMillis(),
                     formaPagamento = formaPagamento.displayName,
                     categoria = categoria.displayName,

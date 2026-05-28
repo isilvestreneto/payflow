@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.payflow.app.domain.model.HomeSummary
 import com.payflow.app.domain.model.User
+import com.payflow.app.ui.preferences.CurrencyPreference
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.util.*
@@ -128,8 +129,12 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     exchangeRate: Double?,
 ) {
-    val currencyFormat = remember {
-        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
+    val currencyFormat = remember(user?.currency) {
+        if (user?.currency == CurrencyPreference.USD) {
+            NumberFormat.getCurrencyInstance(Locale.US)
+        } else {
+            NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
+        }
     }
 
     LazyColumn(
@@ -184,7 +189,19 @@ private fun HomeContent(
         }
 
         // Card principal - Total Mensal
+        // Card principal - Total Mensal
         item {
+            val displayCurrency = user?.currency
+            val isBrl = displayCurrency == null || displayCurrency == CurrencyPreference.BRL
+
+            val displayValue = if (isBrl) {
+                summary.monthlySpending
+            } else {
+                if (exchangeRate != null && exchangeRate > 0) summary.monthlySpending / exchangeRate else null
+            }
+
+            val currencySymbol = if (isBrl) "R$" else "US$"
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -198,8 +215,8 @@ private fun HomeContent(
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFF6366F1), // Azul/Roxo
-                                    Color(0xFF8B5CF6)  // Roxo
+                                    Color(0xFF6366F1),
+                                    Color(0xFF8B5CF6)
                                 )
                             )
                         )
@@ -218,18 +235,38 @@ private fun HomeContent(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Text(
-                            text = currencyFormat.format(summary.monthlySpending),
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-
-                        if (exchangeRate != null && exchangeRate > 0) {
+                        if (displayValue != null) {
                             Text(
-                                text = "≈ US$ ${String.format("%.2f", summary.monthlySpending / exchangeRate)}",
-                                fontSize = 16.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                                text = "$currencySymbol ${String.format("%.2f", displayValue)}",
+                                fontSize = 36.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "Carregando...",
+                                fontSize = 36.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+
+                        // Mostra a conversão na outra moeda como referência
+                        if (exchangeRate != null && exchangeRate > 0) {
+                            val secondaryValue = if (isBrl) {
+                                "≈ US$ ${
+                                    String.format(
+                                        "%.2f",
+                                        summary.monthlySpending / exchangeRate
+                                    )
+                                }"
+                            } else {
+                                "≈ R$ ${String.format("%.2f", summary.monthlySpending)}"
+                            }
+                            Text(
+                                text = secondaryValue,
+                                fontSize = 14.sp,
+                                color = Color.White.copy(alpha = 0.6f)
                             )
                         }
 
@@ -240,8 +277,6 @@ private fun HomeContent(
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.7f)
                         )
-
-
                     }
                 }
             }
@@ -580,7 +615,11 @@ private fun HomeContent(
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
-                                            text = "Usado ${subscription.useCount}x este mês · ${currencyFormat.format(subscription.value)}/mês",
+                                            text = "Usado ${subscription.useCount}x este mês · ${
+                                                currencyFormat.format(
+                                                    subscription.value
+                                                )
+                                            }/mês",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                         )
@@ -744,7 +783,11 @@ private fun HomeEmptyState(
                         modifier = Modifier
                             .size(90.dp)
                             .background(Color.White, CircleShape)
-                            .border(4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+                            .border(
+                                4.dp,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -839,7 +882,7 @@ private fun AnimatedSubscriptionIcons() {
             SubscriptionService("Netflix", Icons.Default.Movie, Color(0xFFE50914)),
             SubscriptionService("Spotify", Icons.Default.MusicNote, Color(0xFF1DB954)),
             SubscriptionService("YouTube", Icons.Default.PlayArrow, Color(0xFFFF0000)),
-      
+
             SubscriptionService("HBO", Icons.Default.Tv, Color(0xFF8B5CF6))
         )
 

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payflow.app.domain.model.PaymentMethod
+import com.payflow.app.domain.model.SubscriptionStatus
 import com.payflow.app.domain.model.SubscriptionType
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,10 +38,12 @@ fun SubscriptionScreen(
         initialSelectedDateMillis = viewModel.dataMillis
     )
 
+    var expandedStatus by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         text = if (viewModel.editingId == null) "Nova Assinatura" else "Editar Assinatura",
                         fontWeight = FontWeight.Bold
@@ -166,7 +169,9 @@ fun SubscriptionScreen(
                     readOnly = true,
                     label = { Text("Forma de Pagamento") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPayment) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
@@ -203,7 +208,9 @@ fun SubscriptionScreen(
                     readOnly = true,
                     label = { Text("Categoria") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
@@ -235,15 +242,43 @@ fun SubscriptionScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Ativa?", color = MaterialTheme.colorScheme.onBackground, fontSize = 16.sp)
-                Checkbox(
-                    checked = viewModel.ativo,
-                    onCheckedChange = { viewModel.ativo = it },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = MaterialTheme.colorScheme.outline
+                ExposedDropdownMenuBox(
+                    expanded = expandedStatus,
+                    onExpandedChange = { expandedStatus = it }
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.status.displayName,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Status") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedStatus) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedLabelColor = MaterialTheme.colorScheme.outline,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                        )
                     )
-                )
+                    ExposedDropdownMenu(
+                        expanded = expandedStatus,
+                        onDismissRequest = { expandedStatus = false }
+                    ) {
+                        SubscriptionStatus.entries.forEach { statusOption ->
+                            DropdownMenuItem(
+                                text = { Text(text = statusOption.displayName) },
+                                onClick = {
+                                    viewModel.status = statusOption
+                                    expandedStatus = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
