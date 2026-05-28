@@ -161,14 +161,14 @@ Se for necessário recriar o projeto Firebase:
 
 ## 👥 Equipe
 
-| Nome | Papel principal | GitHub |
-|------|-----------------|--------|
-| Ivanildo | Autenticação (OAuth2) + Setup Firebase | [@usuario](https://github.com/usuario) |
-| Ana Caroline | Tela de Histórico + filtros | [@usuario](https://github.com/usuario) |
-| Rafael | Tela de Cadastro de Assinatura | [@usuario](https://github.com/usuario) |
-| Jeferson | Tela de Detalhe + ações | [@usuario](https://github.com/usuario) |
-| _Integrante 5_ | Home (Dashboard) + componentes | [@usuario](https://github.com/usuario) |
-| _Integrante 6_ | Perfil + Configurações + Integração | [@usuario](https://github.com/usuario) |
+| Nome | GitHub |
+|------|--------|
+| Ivanildo | [@isilvestreneto](https://github.com/isilvestreneto) |
+| Ana Caroline | [@carolinedantasdev](https://github.com/carolinedantasdev) |
+| Rafael | [@rafaelsousapereira](https://github.com/rafaelsousapereira) |
+| Jeferson | [@jefersonguerrajr](https://github.com/jefersonguerrajr) |
+| Wendel | [@wendel-sa](https://github.com/wendel-sa) |
+| Aleff | [@AleffTrajano](https://github.com/AleffTrajano) |
 
 ---
 
